@@ -1,0 +1,11 @@
+BoldAsFont=no
+Columns=108
+Rows=42
+Term=xterm-256color
+#BackgroundColour=0,16,32
+RightClickAction=paste
+Font=Lucida Console
+FontHeight=12
+FontSmoothing=full
+Transparency=low
+OpaqueWhenFocused=yes

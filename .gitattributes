@@ -1,0 +1,10 @@
+# required due to windows adding crlf automatically
+*.bash_profile -crlf
+*.bashrc -crlf
+*.gitconfig -crlf
+*.inputrc -crlf
+*.vimrc -crlf
+*.vim -crlf
+*.functions -crlf
+*.linux -crlf
+*.sh -crlf
