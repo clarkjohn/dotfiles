@@ -19,9 +19,10 @@ shopt -s nocaseglob;
 # keep history up to date, across sessions, in realtime
 # http://unix.stackexchange.com/a/48113
 export HISTCONTROL=ignoredups:erasedups
-HISTFILESIZE=10000 
-HISTSIZE=1000
+HISTFILESIZE=99999 
+HISTSIZE=99999
 HISTTIMEFORMAT="%a %b %Y %T "
+HISTIGNORE="ls:l:ll:ld:exit:h:history:[bf]g:j:jobs"
 shopt -s histappend
 alias h=history
 
@@ -99,7 +100,7 @@ case $(uname) in
 	*MING*) 
 		#windows
 		# exports
-		export PATH="$JAVA_HOME/bin:$ANT_HOME\bin:$CATALINA_HOME\bin:$M2_HOME\bin:$PATH"
+		export PATH="$PY_HOME:$GROOVY_HOME/bin:$JAVA_HOME/bin:$ANT_HOME/bin:$CATALINA_HOME/bin:$M2_HOME/bin:$PATH;"
 				
 		# prompt
 		source ~/.bash_prompt.windows;

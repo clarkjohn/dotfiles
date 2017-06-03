@@ -61,6 +61,9 @@ function g-reset-to-origin-remove-all-commits() {
 # delete local branches:
 # 1) all merged to master
 # 2) autocommitted branch from g-reset-to-origin-remove-all-commits() that are older than 7 days
+#
+#use this
+#https://github.com/paulirish/dotfiles/blob/master/bin/git-delete-merged-branches
 function g-clean-branches() {
 	#http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
 	echo "deleting local branches merged to master, except for development branches"
