@@ -52,7 +52,7 @@ set lazyredraw " Don't redraw when we don't have to
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ " Show “invisible” characters
 set magic " Enable extended regexes
 if version >= 703
-	set mouse=a " Enable mouse in all in all modes
+	set mouse=r " Enable mouse in all in all modes
 	set nofoldenable    " disable folding
 endif
 set noerrorbells " Disable error bells
