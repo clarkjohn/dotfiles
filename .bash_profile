@@ -67,15 +67,19 @@ alias ld='ls -l | grep "^d"' # only directories
 
 # find shorthand
 function f() {
-	echo find . -iname "*$1*", with ls output
+	echo find . -iname "*$1*" 2>&1 -exec ls -lhAFG --color --time-style long-iso {} \; | grep -v 'Permission denied' | grep -v 'total 0'
 	find . -iname "*$1*" 2>&1 -exec ls -lhAFG --color --time-style long-iso {} \; | grep -v 'Permission denied' | grep -v 'total 0'
 }
-alias f-text-1-in-all-files-with-line-numbers="grep -Rnw ${colorflag} . -e "$1" 2>&1"
 
-alias j="jobs"
+function f-text-1-in-all-files-with-line-numbers() {
+	echo grep -Rnw ${colorflag} . -e $1 2>&1
+	grep -Rnw ${colorflag} . -e "$1" 2>&1
+}
 
 # file size
 alias fs="stat -f $1"
+
+alias j="jobs"
 
 # git Autocomplete for 'g' and 'config' as well
 complete -o default -o nospace -F _git g
@@ -86,6 +90,9 @@ complete -o default -o nospace -F _git config
 
 # fast cd, github.com/rupa/z
 source ~/bin/z.sh
+
+# bash/zsh git prompt support
+#source ~/bin/git-prompt.sh
 
 # git for dotfiles, linux or windows
 # https://developer.atlassian.com/blog/2016/02/best-way-to-store-dotfiles-git-bare-repo/
@@ -98,11 +105,20 @@ function config(){
 
 case $(uname) in
 	*MING*) 
-		#windows
-		# exports
-		export PATH="$PY_HOME:$GROOVY_HOME/bin:$JAVA_HOME/bin:$ANT_HOME/bin:$CATALINA_HOME/bin:$M2_HOME/bin:$PATH;"
-				
-		# prompt
+
+		# windows
+		# windows path
+		PATH=~$PY_HOME:$PATH
+		PATH=~$GROOVY_HOME/bin:$PATH
+		PATH=~$JAVA_HOME/bin:$PATH
+		PATH=~$KOTLIN_HOME/bin:$PATH
+		PATH=~$NODE_HOME/bin:$PATH		
+		PATH=~$ANT_HOME/bin:$PATH
+		PATH=~$CATALINA_HOME/bin:$PATH
+		PATH=~$M2_HOME/bin:$PATH
+		export PATH
+		
+		# prompt settings
 		source ~/.bash_prompt.windows;
 
 		# jq json windows executable parser
@@ -111,7 +127,7 @@ case $(uname) in
 		# print clipboard contents
 		alias a-showclip='cat /dev/clipboard'
 		
-		# open explorer at current dir
+		# open windows explorer at current dir
 		alias a-open-windows-explorer-here='cmd //c explorer .'
 	;;
 	'Linux') 
@@ -125,7 +141,7 @@ case $(uname) in
 			export TERM='xterm-color'
 		fi
 		
-		# prompt
+		# prompt settings
 		source ~/.bash_prompt.linux;
 		
 		# jq json linux executable parser

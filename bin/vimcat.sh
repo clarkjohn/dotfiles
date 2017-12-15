@@ -9,7 +9,7 @@
 : if 0
   tmpfile=$(mktemp -t vimcat.XXXXXXXX)
   exec 9<>"$tmpfile"
-  rm "$tmpfile"
+  rm -f "$tmpfile"
 
   output="$(vim -e -X -R "$@" -c "source $0" -c "visual" -c "bufdo call AnsiHighlight()" -c qa 9>&1 &>/dev/null)"
   exec 9<&-

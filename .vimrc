@@ -107,9 +107,11 @@ set winminheight=0 " Allow splits to be reduced to a single line
 :nmap <F2> :edit<CR> "refresh file
 :nmap <F3> :set invnumber<CR>
 :nmap <F4> :set wrap!<CR>
-":nmap <F5> :set mouse=a<CR>
-:nmap <F7> :tabp<CR>
-:nmap <F8> :tabn<CR>
+
+" toggle syntax highlighting
+" https://stackoverflow.com/questions/9054780/how-to-toggle-vims-search-highlight-visibility-without-disabling-it
+let hlstate=0
+:nmap <F8> :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
 
 " vimdiff specific commands
 if &diff
@@ -128,9 +130,15 @@ endif
 
 " Java Log {{{
 augroup filetype_java_sl4j
+
+  " speed up large logs
+  " https://stackoverflow.com/questions/4775605/vim-syntax-highlight-improve-performance
+  " http://vim.wikia.com/wiki/Speed_up_Syntax_Highlighting
+
   autocmd!
+  set synmaxcol=250 " max columns to check for syntax highlighting
+  syntax sync minlines=300 maxlines=300
   set noswapfile " Disable swap file, just viewing logs
-  au! BufRead,BufNewFile catalina.out,nohup.out,*.out,*.out.*,*.log,*.log.* set filetype=slf4j
+  au! BufRead,BufNewFile *.out,*.out.*,*.log,*.log.*,catalina.log set filetype=slf4j 
 augroup END
 " }}}
-

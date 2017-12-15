@@ -98,10 +98,11 @@
 	template = ~/.gitmessage
 
 [core]
-	#developement uses windows cr lf
 	editor = notepad
-	autocrlf = true
-	eol = lf
+	# https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
+	# currently Windows only
+	autocrlf = false
+	#eol = crlf
 	#skip prompting for merge commit
 	mergeoptions = --no-edit
 

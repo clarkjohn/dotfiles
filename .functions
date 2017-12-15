@@ -13,12 +13,65 @@ function a-copy-dotfiles-to-servers() {
 	echo $SERVERS_TO_COPY_DOTFILES
 	for server in "${SERVERS_TO_COPY_DOTFILES[@]}"; do
 		echo copying dotfiles over to "$server"
-		ssh "$server" "mkdir -p ~/bin && mkdir -p ~/.vim/syntax && mkdir -p ~/.vim/colors"
+		ssh "$server" "mkdir -p ~/bin && mkdir -p ~/.vim/syntax && mkdir -p ~/.vim/colors && mkdir -p ~/.vim/plugins"
 		scp ~/.bash_profile ~/.bash_prompt.linux ~/.bashrc ~/.functions  ~/.dircolors ~/.extra ~/.gitconfig ~/.gitconfig.local ~/.gitignore ~/.inputrc ~/.vimrc "$server":~
 		scp ~/.vim/colors/* "$server":~/.vim/colors
+		scp ~/.vim/plugins/* "$server":~/.vim/plugins
 		scp ~/.vim/syntax/slf4j.vim "$server":~/.vim/syntax
 		scp ~/bin/java-color-tail.pl ~/bin/vimcat.sh ~/bin/z.sh ~/bin/colortest.sh "$server":~/bin
 	done;
+}
+
+# Extract archives - use: extract <file>
+# Based on http://dotfiles.org/~pseup/.bashrc
+function a-extract-archive() {
+	if [ -f "$1" ] ; then
+		local filename=$(basename "$1")
+		local foldername="${filename%%.*}"
+		local fullpath=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
+		local didfolderexist=false
+		if [ -d "$foldername" ]; then
+			didfolderexist=true
+			read -p "$foldername already exists, do you want to overwrite it? (y/n) " -n 1
+			echo
+			if [[ $REPLY =~ ^[Nn]$ ]]; then
+				return
+			fi
+		fi
+		mkdir -p "$foldername" && cd "$foldername"
+		case $1 in
+			*.tar.bz2) tar xjf "$fullpath" ;;
+			*.tar.gz) tar xzf "$fullpath" ;;
+			*.tar.xz) tar Jxvf "$fullpath" ;;
+			*.tar.Z) tar xzf "$fullpath" ;;
+			*.tar) tar xf "$fullpath" ;;
+			*.taz) tar xzf "$fullpath" ;;
+			*.tb2) tar xjf "$fullpath" ;;
+			*.tbz) tar xjf "$fullpath" ;;
+			*.tbz2) tar xjf "$fullpath" ;;
+			*.tgz) tar xzf "$fullpath" ;;
+			*.txz) tar Jxvf "$fullpath" ;;
+			*.zip) unzip "$fullpath" ;;
+			*) echo "'$1' cannot be extracted via extract()" && cd .. && ! $didfolderexist && rm -r "$foldername" ;;
+		esac
+	else
+		echo "'$1' is not a valid file"
+	fi
+}
+
+# Determine size of a file or total size of a directory
+# https://github.com/mathiasbynens/dotfiles/blob/master/.functions
+function fs() {
+	if du -b /dev/null > /dev/null 2>&1; then
+		local arg=-sbh;
+	else
+		local arg=-sh;
+	fi
+	if [[ -n "$@" ]]; then
+		du $arg -- "$@";
+	else
+		du $arg .[^.]* ./*;
+	fi;
 }
 
 # git
@@ -38,7 +91,7 @@ function g(){
 function g-reset-to-origin-remove-all-commits() {
 	timestamp=`date "+%Y-%m-%d-%H_%M_%S"`
 	branchname=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
-	read -p "backup any changes including untracked files then reset branch $branchname to origin (y/n)? "
+	read -p "backup any changes including untracked files then reset branch $branchname to origin [Y(es backup and reset), N(o just reset)]? "
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
 		echo "about to auto-commit any changes, including untracked files:"
@@ -47,7 +100,14 @@ function g-reset-to-origin-remove-all-commits() {
 		echo ""
 		echo "autocommit files"
 		git commit -a -m "auto commit at $timestamp"
-		echo "now resetting to origin/$branchname"
+		echo "resetting to origin/$branchname"
+		git fetch origin
+		git reset --hard origin/$branchname
+		echo "removing untracked files"
+		git clean -d -f
+	elif [[ $REPLY =~ ^[Nn]$ ]]
+	then
+		echo "resetting to origin/$branchname"
 		git fetch origin
 		git reset --hard origin/$branchname
 		echo "removing untracked files"
@@ -61,10 +121,9 @@ function g-reset-to-origin-remove-all-commits() {
 # delete local branches:
 # 1) all merged to master
 # 2) autocommitted branch from g-reset-to-origin-remove-all-commits() that are older than 7 days
-#
 #use this
 #https://github.com/paulirish/dotfiles/blob/master/bin/git-delete-merged-branches
-function g-clean-branches() {
+function g-clean-local-branches() {
 	#http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
 	echo "deleting local branches merged to master, except for development branches"
 	git branch --merged master | egrep -v "(^\*|master|dev|dev_1|develop)" | xargs git branch -d
@@ -93,11 +152,10 @@ function g-clean-branches() {
 	done		
 }
 
-function g-vim-show-1() {
-	g show "$1" | vim - "+set filetype=${1##*.}";
-}
-
 alias g-find-merge-conflicts-in-files="grep -Ril '<<<<<<<\|>>>>>>>'"
+
+# git root
+alias g-root='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-cdup || pwd`'
 
 # parse json value
 # https://gist.github.com/cjus/1047794
@@ -106,7 +164,7 @@ alias g-find-merge-conflicts-in-files="grep -Ril '<<<<<<<\|>>>>>>>'"
 #
 # To print all values don't give second argument
 #curl -s -X GET http://twitter.com/users/show/$1.json | jsonValue profile_image_url
-function jsonValue() {
+function a-json-value() {
 	KEY=$1
 	num=$2
 	awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
@@ -116,7 +174,10 @@ function jsonValue() {
 # usage:
 # tail -f *.log | jtail
 # tail -f *.log -f **/*.log | jtail
-alias jtail='$HOME/bin/java-color-tail.pl'
+#alias a-jtail='$HOME/bin/java-color-tail.pl'
+function a-jtail() {
+	tail -f $1 | $HOME/bin/java-color-tail.pl
+}
 
 # List all files, long format, colorized, permissions in octal
 # https://github.com/paulirish/dotfiles/blob/master/.functions
@@ -135,28 +196,53 @@ function la(){
 # maven
 alias mvn='/bin/sh $HOME/bin/mvn-color.sh'
 alias m='mvn $@'
-alias m-code-format='mvn -e net.revelc.code:formatter-maven-plugin:0.5.2:format'
-alias m-skip-tests='mvn -Dmaven.test.skip=true'
 
 # Print each PATH entry on a separate line
-alias a-path='echo -e ${PATH//:/\\n}'
+alias a-paths='echo -e ${PATH//:/\\n}'
 
-# Start an HTTP server from a directory, optionally specifying the port
-function a-start-http-server() {
-	local port="${1:-8000}";
-	sleep 1 && open "http://localhost:${port}/" &
-	# Set the default Content-Type to `text/plain` instead of `application/octet-stream`
-	# And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
-	python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port";
+# Syntax-highlight JSON strings or files
+# Usage: `json '{"foo":42}'` or `echo '{"foo":42}' | json`
+# https://github.com/mathiasbynens/dotfiles/blob/master/.functions
+function a-json() {
+	if [ -t 0 ]; then # argument
+		python -mjson.tool <<< "$*" | pygmentize -l javascript;
+	else # pipe
+		python -mjson.tool | pygmentize -l javascript;
+	fi;
 }
 
-# `a` with no arguments opens the current directory in Atom Editor, otherwise
-# opens the given location
-function a() {
-	if [ $# -eq 0 ]; then
-		atom .;
+# Show all the names (CNs and SANs) listed in the SSL certificate
+# for a given domain
+# https://github.com/mathiasbynens/dotfiles/blob/master/.functions
+function a-getcertnames() {
+	if [ -z "${1}" ]; then
+		echo "ERROR: No domain specified.";
+		return 1;
+	fi;
+
+	local domain="${1}";
+	echo "Testing ${domain}…";
+	echo ""; # newline
+
+	local tmp=$(echo -e "GET / HTTP/1.0\nEOT" \
+		| openssl s_client -connect "${domain}:443" -servername "${domain}" 2>&1);
+
+	if [[ "${tmp}" = *"-----BEGIN CERTIFICATE-----"* ]]; then
+		local certText=$(echo "${tmp}" \
+			| openssl x509 -text -certopt "no_aux, no_header, no_issuer, no_pubkey, \
+			no_serial, no_sigdump, no_signame, no_validity, no_version");
+		echo "Common Name:";
+		echo ""; # newline
+		echo "${certText}" | grep "Subject:" | sed -e "s/^.*CN=//" | sed -e "s/\/emailAddress=.*//";
+		echo ""; # newline
+		echo "Subject Alternative Name(s):";
+		echo ""; # newline
+		echo "${certText}" | grep -A 1 "Subject Alternative Name:" \
+			| sed -e "2s/DNS://g" -e "s/ //g" | tr "," "\n" | tail -n +2;
+		return 0;
 	else
-		atom "$@";
+		echo "ERROR: Certificate not found.";
+		return 1;
 	fi;
 }
 
@@ -170,6 +256,47 @@ function v() {
 	fi;
 }
 
-# open notepadd++
-test -f "/c/Program Files (x86)/Notepad++/notepad++.exe" && alias n='/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
-test -f "/c/Program Files/Notepad++/notepad++.exe" && alias n='/c/Program\ Files/Notepad++/notepad++.exe'
+#windows only functions
+case $(uname) in
+	*MING*) 
+	
+	# Start an HTTP server from a directory, optionally specifying the port
+	function a-start-http-server() {
+		local port="${1:-8000}";
+		sleep 1 && start "http://localhost:${port}/" &
+		echo "starting http server at $port"
+		python -m http.server "$port" 
+	}
+	
+	function a-netsh-show-process() {
+		echo "netstat -abno"
+		netstat -abno 
+	}
+	
+	function a-netsh-show-process-grep-process-name-1() {
+		echo "netstat -abno | grep -B" 1 $1 
+		echo "  Proto  Local Address          Foreign Address        State           PID"
+		netstat -abno | grep -B 1 "$1"
+	}
+	
+	function a-netsh-show-process-grep-port-or-pid-name-1() {
+		echo "netstat -abno | grep -A" 1 $1 
+		echo "  Proto  Local Address          Foreign Address        State           PID"
+		netstat -abno | grep -B 1 "$1"
+	}
+	
+	# `a` with no arguments opens the current directory in Atom Editor, otherwise
+	# opens the given location
+	function a() {
+		if [ $# -eq 0 ]; then
+			atom .;
+		else
+			atom "$@";
+		fi;
+	}
+	
+	# open notepadd++
+	test -f "/c/Program Files (x86)/Notepad++/notepad++.exe" && alias n='/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
+	test -f "/c/Program Files/Notepad++/notepad++.exe" && alias n='/c/Program\ Files/Notepad++/notepad++.exe'
+	;;
+esac
