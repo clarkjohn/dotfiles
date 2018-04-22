@@ -74,8 +74,7 @@ function fs() {
 	fi;
 }
 
-# git
-# wrap git, to show git exit in red
+# wrap git to show git exit in red
 function g(){
 	command git "$@"
 	local exitCode=$?
@@ -86,11 +85,20 @@ function g(){
 	fi
 }
 
+# temporary save all work in a temp commit
+function g-wip() {
+	git status -s long
+	git add .
+	git commit -a -m "WIP: $@"
+	git status -s long
+}
+
 # save current work in a backup branch then do a HARD reset to HEAD
 # based on http://stackoverflow.com/questions/1628088/how-to-reset-my-local-repository-to-be-just-like-the-remote-repository-head
 function g-reset-to-origin-remove-all-commits() {
 	timestamp=`date "+%Y-%m-%d-%H_%M_%S"`
 	branchname=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
+	last_non_merge_commit=`git log --no-merges --format=%B -n 1`
 	read -p "backup any changes including untracked files then reset branch $branchname to origin [Y(es backup and reset), N(o just reset)]? "
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
@@ -99,7 +107,9 @@ function g-reset-to-origin-remove-all-commits() {
 		git add .
 		echo ""
 		echo "autocommit files"
-		git commit -a -m "auto commit at $timestamp"
+		git commit -a -m "auto commit was at: $last_non_merge_commit"
+		echo "Creating backup auto-save branch: auto-save-$branchname-at-$timestamp"
+		git branch "auto-save-$branchname-at-$timestamp" 		
 		echo "resetting to origin/$branchname"
 		git fetch origin
 		git reset --hard origin/$branchname
@@ -196,6 +206,7 @@ function la(){
 # maven
 alias mvn='/bin/sh $HOME/bin/mvn-color.sh'
 alias m='mvn $@'
+alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mvn -o -Dmaven.test.skip=true -DskipTests -Dlicense.skip=true $@'
 
 # Print each PATH entry on a separate line
 alias a-paths='echo -e ${PATH//:/\\n}'
@@ -211,10 +222,9 @@ function a-json() {
 	fi;
 }
 
-# Show all the names (CNs and SANs) listed in the SSL certificate
-# for a given domain
+# Show all the names (CNs and SANs) listed in the SSL certificate for a given domain
 # https://github.com/mathiasbynens/dotfiles/blob/master/.functions
-function a-getcertnames() {
+function a-getcertnames-openssl() {
 	if [ -z "${1}" ]; then
 		echo "ERROR: No domain specified.";
 		return 1;
@@ -246,6 +256,21 @@ function a-getcertnames() {
 	fi;
 }
 
+# https://stackoverflow.com/questions/14464770/how-to-check-heap-usage-of-a-running-jvm-from-the-command-line
+function a-get-heap-size-from-pid-1() {
+	jstat -gc ${1} | tail -n 1 | awk '{split($0,a," "); sum=a[3]+a[4]+a[6]+a[8]; print sum}'
+}
+# Show certificates using curl
+# https://stackoverflow.com/questions/10079707/https-connection-using-curl-from-command-line
+function a-getcertnames-from-endpoint-curl() {
+	if [ -z "${1}" ]; then
+		echo "ERROR: No domain specified.";
+		return 1;
+	fi;
+
+	curl --insecure -v "${1}" 2>&1 | awk 'BEGIN { cert=0 } /^\* Server certificate:/ { cert=1 } /^\*/ { if (cert) print }'
+	return 0;	
+}
 # `v` with no arguments opens the current directory in Vim, otherwise opens the
 # given location
 function v() {
@@ -258,7 +283,7 @@ function v() {
 
 #windows only functions
 case $(uname) in
-	*MING*) 
+	*MING*|*CYGWIN*) 
 	
 	# Start an HTTP server from a directory, optionally specifying the port
 	function a-start-http-server() {
@@ -295,7 +320,7 @@ case $(uname) in
 		fi;
 	}
 	
-	# open notepadd++
+	# open notepad++
 	test -f "/c/Program Files (x86)/Notepad++/notepad++.exe" && alias n='/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
 	test -f "/c/Program Files/Notepad++/notepad++.exe" && alias n='/c/Program\ Files/Notepad++/notepad++.exe'
 	;;

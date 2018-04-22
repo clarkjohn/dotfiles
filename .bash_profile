@@ -35,17 +35,15 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-# mv, rm, cp
+# forcing verbose
 alias mv='mv -v'
 alias rm='rm -i -v'
 alias cp='cp -v'
 
 # scp and ssh, skip banners
 alias ssh='ssh -q'
+alias s='ssh $@'
 alias scp='scp -q'
-
-# always use color, even when piping (to awk,grep,etc)
-#export CLICOLOR_FORCE=1
 
 # use coreutils `ls` if possible…
 hash gls >/dev/null 2>&1 || alias gls="ls"
@@ -58,6 +56,9 @@ export CLICOLOR_FORCE=1
 alias a-diskspace-disk-report="df -P -kHl"
 alias a-diskspace-directories-over-1G="du -h . | grep '^\s*[0-9\.]\+G'"
 alias a-diskspace-directories-over-1G-fast="du -h -d 3 . | grep '^\s*[0-9\.]\+G'"
+
+# reload bash profile
+alias reload='source ~/.bashrc'
 
 # ls
 alias l='ls -CF ${colorflag} --group-directories-first'
@@ -76,22 +77,29 @@ function f-text-1-in-all-files-with-line-numbers() {
 	grep -Rnw ${colorflag} . -e "$1" 2>&1
 }
 
+function f-text-1-in-gz-files-with-line-numbers() {
+	find -name \*.gz -print0 | xargs -0 zgrep -i "$1"
+}
+
 # file size
 alias fs="stat -f $1"
-
-alias j="jobs"
 
 # tmux
 alias t='tmux'
 # use existing session, if it exists
 alias ta='tmux attach'
 
+# maven
+alias mvn='/bin/sh $HOME/bin/mvn-color.sh'
+alias m='mvn $@'
+alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mvn -o -Dmaven.test.skip=true -DskipTests -Dlicense.skip=true $@'
+
 # git Autocomplete for 'g' and 'config' as well
 complete -o default -o nospace -F _git g
-complete -o default -o nospace -F _git config
+complete -o default -o nospace -F _git dotfiles
 
 # add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
-[ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
+[ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh s;
 
 # fast cd, github.com/rupa/z
 source ~/bin/z.sh
@@ -101,17 +109,16 @@ source ~/bin/z.sh
 
 # git for dotfiles, linux or windows
 # https://developer.atlassian.com/blog/2016/02/best-way-to-store-dotfiles-git-bare-repo/
-function config(){
+function dotfiles(){
 	case $(uname) in
-		*MING*) /c/Program\ Files/Git/bin/git.exe --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
+		*MING*|*CYGWIN*) /c/Program\ Files/Git/bin/git.exe --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
 		'Linux') /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
 	esac
 }
 
 case $(uname) in
-	*MING*) 
+	*MING*|*CYGWIN*) 
 
-		# windows
 		# windows path
 		PATH=~$PY_HOME:$PATH
 		PATH=~$GROOVY_HOME/bin:$PATH
@@ -125,12 +132,9 @@ case $(uname) in
 		
 		# prompt settings
 		source ~/.bash_prompt.windows;
-
-		# jq json windows executable parser
-		alias jq='$HOME/bin/jq-win64'
 		
 		# print clipboard contents
-		alias a-showclip='cat /dev/clipboard'
+		alias a-showclipboard='cat /dev/clipboard'
 		
 		# open windows explorer at current dir
 		alias a-open-windows-explorer-here='cmd //c explorer .'
@@ -148,9 +152,6 @@ case $(uname) in
 		
 		# prompt settings
 		source ~/.bash_prompt.linux;
-		
-		# jq json linux executable parser
-		alias jq='$HOME/bin/jq-linux64'
 	;;
 esac
 
