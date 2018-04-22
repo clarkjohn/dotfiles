@@ -81,6 +81,11 @@ alias fs="stat -f $1"
 
 alias j="jobs"
 
+# tmux
+alias t='tmux'
+# use existing session, if it exists
+alias ta='tmux attach'
+
 # git Autocomplete for 'g' and 'config' as well
 complete -o default -o nospace -F _git g
 complete -o default -o nospace -F _git config
