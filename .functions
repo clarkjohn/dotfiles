@@ -203,11 +203,6 @@ function la(){
 	}'
 }
 
-# maven
-alias mvn='/bin/sh $HOME/bin/mvn-color.sh'
-alias m='mvn $@'
-alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mvn -o -Dmaven.test.skip=true -DskipTests -Dlicense.skip=true $@'
-
 # Print each PATH entry on a separate line
 alias a-paths='echo -e ${PATH//:/\\n}'
 
