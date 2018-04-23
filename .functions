@@ -4,12 +4,12 @@
 alias c='$HOME/bin/vimcat.sh'
 
 # show colors
-alias a-show-available-colors='$HOME/bin/colortest.sh'
+alias a_show_available_colors='$HOME/bin/colortest.sh'
 
 # copy settings to local servers
 # SERVERS_TO_COPY_DOTFILES should be overwritten in .extra
 declare -a SERVERS_TO_COPY_DOTFILES=("placeholder1" "placeholder2")
-function a-copy-dotfiles-to-servers() {
+function a_copy_dotfiles_to_servers() {
 	echo $SERVERS_TO_COPY_DOTFILES
 	for server in "${SERVERS_TO_COPY_DOTFILES[@]}"; do
 		echo copying dotfiles over to "$server"
@@ -24,7 +24,7 @@ function a-copy-dotfiles-to-servers() {
 
 # Extract archives - use: extract <file>
 # Based on http://dotfiles.org/~pseup/.bashrc
-function a-extract-archive() {
+function a_extract_archive() {
 	if [ -f "$1" ] ; then
 		local filename=$(basename "$1")
 		local foldername="${filename%%.*}"
@@ -86,7 +86,7 @@ function g(){
 }
 
 # temporary save all work in a temp commit
-function g-wip() {
+function g_wip() {
 	git status -s long
 	git add .
 	git commit -a -m "WIP: $@"
@@ -95,7 +95,7 @@ function g-wip() {
 
 # save current work in a backup branch then do a HARD reset to HEAD
 # based on http://stackoverflow.com/questions/1628088/how-to-reset-my-local-repository-to-be-just-like-the-remote-repository-head
-function g-reset-to-origin-remove-all-commits() {
+function g_reset_to_origin_remove_all_commits() {
 	timestamp=`date "+%Y-%m-%d-%H_%M_%S"`
 	branchname=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
 	last_non_merge_commit=`git log --no-merges --format=%B -n 1`
@@ -125,7 +125,6 @@ function g-reset-to-origin-remove-all-commits() {
 	else
 		echo "cancelled"
 	fi
-
 }
 
 # delete local branches:
@@ -133,7 +132,7 @@ function g-reset-to-origin-remove-all-commits() {
 # 2) autocommitted branch from g-reset-to-origin-remove-all-commits() that are older than 7 days
 #use this
 #https://github.com/paulirish/dotfiles/blob/master/bin/git-delete-merged-branches
-function g-clean-local-branches() {
+function g_clean_local_branches() {
 	#http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
 	echo "deleting local branches merged to master, except for development branches"
 	git branch --merged master | egrep -v "(^\*|master|dev|dev_1|develop)" | xargs git branch -d
@@ -162,10 +161,10 @@ function g-clean-local-branches() {
 	done		
 }
 
-alias g-find-merge-conflicts-in-files="grep -Ril '<<<<<<<\|>>>>>>>'"
+alias g_find_merge_conflicts_in_files="grep -Ril '<<<<<<<\|>>>>>>>'"
 
 # git root
-alias g-root='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-cdup || pwd`'
+alias g_root='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-cdup || pwd`'
 
 # parse json value
 # https://gist.github.com/cjus/1047794
@@ -174,7 +173,7 @@ alias g-root='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-c
 #
 # To print all values don't give second argument
 #curl -s -X GET http://twitter.com/users/show/$1.json | jsonValue profile_image_url
-function a-json-value() {
+function a_json_value() {
 	KEY=$1
 	num=$2
 	awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
@@ -185,7 +184,7 @@ function a-json-value() {
 # tail -f *.log | jtail
 # tail -f *.log -f **/*.log | jtail
 #alias a-jtail='$HOME/bin/java-color-tail.pl'
-function a-jtail() {
+function a_jtail() {
 	tail -f $1 | $HOME/bin/java-color-tail.pl
 }
 
@@ -204,12 +203,12 @@ function la(){
 }
 
 # Print each PATH entry on a separate line
-alias a-paths='echo -e ${PATH//:/\\n}'
+alias a_paths='echo -e ${PATH//:/\\n}'
 
 # Syntax-highlight JSON strings or files
 # Usage: `json '{"foo":42}'` or `echo '{"foo":42}' | json`
 # https://github.com/mathiasbynens/dotfiles/blob/master/.functions
-function a-json() {
+function a_json() {
 	if [ -t 0 ]; then # argument
 		python -mjson.tool <<< "$*" | pygmentize -l javascript;
 	else # pipe
@@ -219,7 +218,7 @@ function a-json() {
 
 # Show all the names (CNs and SANs) listed in the SSL certificate for a given domain
 # https://github.com/mathiasbynens/dotfiles/blob/master/.functions
-function a-getcertnames-openssl() {
+function a_getcertnames_openssl() {
 	if [ -z "${1}" ]; then
 		echo "ERROR: No domain specified.";
 		return 1;
@@ -252,12 +251,12 @@ function a-getcertnames-openssl() {
 }
 
 # https://stackoverflow.com/questions/14464770/how-to-check-heap-usage-of-a-running-jvm-from-the-command-line
-function a-get-heap-size-from-pid-1() {
+function a_get_heap_size_from_pid_1() {
 	jstat -gc ${1} | tail -n 1 | awk '{split($0,a," "); sum=a[3]+a[4]+a[6]+a[8]; print sum}'
 }
 # Show certificates using curl
 # https://stackoverflow.com/questions/10079707/https-connection-using-curl-from-command-line
-function a-getcertnames-from-endpoint-curl() {
+function a_getcertnames_from_endpoint_curl() {
 	if [ -z "${1}" ]; then
 		echo "ERROR: No domain specified.";
 		return 1;
@@ -281,25 +280,25 @@ case $(uname) in
 	*MING*|*CYGWIN*) 
 	
 	# Start an HTTP server from a directory, optionally specifying the port
-	function a-start-http-server() {
+	function a_start_http_server() {
 		local port="${1:-8000}";
 		sleep 1 && start "http://localhost:${port}/" &
 		echo "starting http server at $port"
 		python -m http.server "$port" 
 	}
 	
-	function a-netsh-show-process() {
+	function a_netsh_show_process() {
 		echo "netstat -abno"
 		netstat -abno 
 	}
 	
-	function a-netsh-show-process-grep-process-name-1() {
+	function a_netsh_show_process_grep_process_name_1() {
 		echo "netstat -abno | grep -B" 1 $1 
 		echo "  Proto  Local Address          Foreign Address        State           PID"
 		netstat -abno | grep -B 1 "$1"
 	}
 	
-	function a-netsh-show-process-grep-port-or-pid-name-1() {
+	function a_netsh_show_process_grep_port_or_pid_name_1() {
 		echo "netstat -abno | grep -A" 1 $1 
 		echo "  Proto  Local Address          Foreign Address        State           PID"
 		netstat -abno | grep -B 1 "$1"

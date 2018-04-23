@@ -53,9 +53,9 @@ if gls --color > /dev/null 2>&1; then colorflag="--color"; else colorflag="-G"; 
 export CLICOLOR_FORCE=1
 
 # disk space
-alias a-diskspace-disk-report="df -P -kHl"
-alias a-diskspace-directories-over-1G="du -h . | grep '^\s*[0-9\.]\+G'"
-alias a-diskspace-directories-over-1G-fast="du -h -d 3 . | grep '^\s*[0-9\.]\+G'"
+alias a_diskspace_disk_report="df -P -kHl"
+alias a_diskspace_directories_over_1G="du -h . | grep '^\s*[0-9\.]\+G'"
+alias a_diskspace_directories_over_1G_fast="du -h -d 3 . | grep '^\s*[0-9\.]\+G'"
 
 # reload bash profile
 alias reload='source ~/.bashrc'
@@ -72,12 +72,12 @@ function f() {
 	find . -iname "*$1*" 2>&1 -exec ls -lhAFG --color --time-style long-iso {} \; | grep -v 'Permission denied' | grep -v 'total 0'
 }
 
-function f-text-1-in-all-files-with-line-numbers() {
+function f_text_1_in_all_files_with_line_numbers() {
 	echo grep -Rnw ${colorflag} . -e $1 2>&1
 	grep -Rnw ${colorflag} . -e "$1" 2>&1
 }
 
-function f-text-1-in-gz-files-with-line-numbers() {
+function f_text_1_in_gz_files_with_line_numbers() {
 	find -name \*.gz -print0 | xargs -0 zgrep -i "$1"
 }
 
@@ -134,10 +134,10 @@ case $(uname) in
 		source ~/.bash_prompt.windows;
 		
 		# print clipboard contents
-		alias a-showclipboard='cat /dev/clipboard'
+		alias a_showclipboard='cat /dev/clipboard'
 		
 		# open windows explorer at current dir
-		alias a-open-windows-explorer-here='cmd //c explorer .'
+		alias a_open_windows_explorer_here='cmd //c explorer .'
 	;;
 	'Linux') 
 		# linux
