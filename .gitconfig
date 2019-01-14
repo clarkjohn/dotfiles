@@ -8,21 +8,11 @@
 	d=diff
 
 	# branches
-	b=for-each-ref --sort='-authordate' --format='%(authordate)%09%(objectname:local)%09%(refname)' refs/heads #doesnt work
-	branch-details=for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
-	branch-unpushed=log --branches --not --remotes --simplify-by-decoration --decorate --oneline --grep='auto commit at' --invert-grep
-
-	# stash
-	st=stash -u
-	stl=stash list -n 5 --format='%gd%C(cyan) %ad %Cred(%cr):%Creset %gs'
-	st-files-in-stash-number="!st() { git stash show --name-only -p stash@{$1}; }; st"
-	st-checkout-from-stash-number-for-file="!st() { git checkout stash@{$1} -- $2; }; st"
-
-	# stash snapshots
-	# via http://blog.apiaxle.com/post/handy-git-tips-to-stop-you-getting-fired/
-	st-snapshot=!git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
-	st-snapshots=!git stash list --grep snapshot
-
+	b=for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
+	br=for-each-ref --sort=committerdate refs/remotes --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
+	# branches not pushed 
+	bu=log --branches --not --remotes --simplify-by-decoration --decorate --oneline --grep='auto commit at' --invert-grep
+	
 	# short history
 	l=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate -20 --no-merges
 	# include merges
@@ -44,6 +34,7 @@
 	list-files-ignored=ls-files --others -i --exclude-standard 
 	list-files-in-commit-1=diff-tree --no-commit-id --name-only -r 
 	list-files-duplicate-by-sha-and-sort-by-sha="!git ls-tree -r HEAD | cut -c 13- | sort | uniq -D -w 40"
+	list-files-deleted = ""!f() {git log --diff-filter=D --summary | grep delete; }; f"
 	
 	list-remotes = "!git config -l | grep remote.*url | tail -n +2"
 		
@@ -155,4 +146,3 @@
 
 [credential]
 	helper = wincred
-
