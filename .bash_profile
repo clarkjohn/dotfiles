@@ -94,6 +94,11 @@ alias mvn='/bin/sh $HOME/bin/mvn-color.sh'
 alias m='mvn $@'
 alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mvn -o -Dmaven.test.skip=true -DskipTests -Dlicense.skip=true $@'
 
+# cheat sheet
+function cheat() {
+	curl -s cht.sh/$1
+}
+
 # git Autocomplete for 'g' and 'config' as well
 complete -o default -o nospace -F _git g
 complete -o default -o nospace -F _git dotfiles
