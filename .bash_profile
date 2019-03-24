@@ -3,7 +3,7 @@ export PATH="$HOME/bin:$PATH";
 
 # dircolors
 if [ -f "$HOME/.dircolors" ] ; then
-	eval $(dircolors -b $HOME/.dircolors)
+    eval $(dircolors -b $HOME/.dircolors)
 fi
 
 # check the window size after each command and, if necessary, update the values of LINES and COLUMNS.
@@ -68,17 +68,17 @@ alias ld='ls -l | grep "^d"' # only directories
 
 # find shorthand
 function f() {
-	echo find . -iname "*$1*" 2>&1 -exec ls -lhAFG --color --time-style long-iso {} \; | grep -v 'Permission denied' | grep -v 'total 0'
-	find . -iname "*$1*" 2>&1 -exec ls -lhAFG --color --time-style long-iso {} \; | grep -v 'Permission denied' | grep -v 'total 0'
+    echo find . -iname "*$1*" 2>&1 -exec ls -lhAFG --color --time-style long-iso {} \; | grep -v 'Permission denied' | grep -v 'total 0'
+    find . -iname "*$1*" 2>&1 -exec ls -lhAFG --color --time-style long-iso {} \; | grep -v 'Permission denied' | grep -v 'total 0'
 }
 
 function f_text_1_in_all_files_with_line_numbers() {
-	echo grep -Rnw ${colorflag} . -e $1 2>&1
-	grep -Rnw ${colorflag} . -e "$1" 2>&1
+    echo grep -Rnw ${colorflag} . -e $1 2>&1
+    grep -Rnw ${colorflag} . -e "$1" 2>&1
 }
 
 function f_text_1_in_gz_files_with_line_numbers() {
-	find -name \*.gz -print0 | xargs -0 zgrep -i "$1"
+    find -name \*.gz -print0 | xargs -0 zgrep -i "$1"
 }
 
 # file size
@@ -97,7 +97,7 @@ alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mv
 
 # cheat sheet
 function cheat() {
-	curl -s cht.sh/$1
+    curl -s cht.sh/$1
 }
 
 # git Autocomplete for 'g' and 'config' as well
@@ -116,55 +116,55 @@ source ~/bin/z.sh
 # git for dotfiles, linux or windows
 # https://developer.atlassian.com/blog/2016/02/best-way-to-store-dotfiles-git-bare-repo/
 function dotfiles(){
-	case $(uname) in
-		*MING*|*CYGWIN*) /c/Program\ Files/Git/bin/git.exe --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
-		'Linux') /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
-	esac
+    case $(uname) in
+        *MING*|*CYGWIN*) /c/Program\ Files/Git/bin/git.exe --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
+        'Linux') /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
+    esac
 }
 
 case $(uname) in
-	*MING*|*CYGWIN*) 
+    *MING*|*CYGWIN*) 
 
-		# windows path
-		PATH=~$PY_HOME:$PATH
-		PATH=~$GROOVY_HOME/bin:$PATH
-		PATH=~$JAVA_HOME/bin:$PATH
-		PATH=~$KOTLIN_HOME/bin:$PATH
-		PATH=~$NODE_HOME/bin:$PATH		
-		PATH=~$ANT_HOME/bin:$PATH
-		PATH=~$CATALINA_HOME/bin:$PATH
-		PATH=~$M2_HOME/bin:$PATH
-		export PATH
-		
-		# prompt settings
-		source ~/.bash_prompt.windows;
-		
-		# print clipboard contents
-		alias a_showclipboard='cat /dev/clipboard'
-		
-		# open windows explorer at current dir
-		alias a_open_windows_explorer_here='cmd //c explorer .'
-	;;
-	'Linux') 
-		# linux
-		# exports
-		if [ -e /usr/share/terminfo/x/xterm+256color ]; then
-			export TERM='xterm+256color'
-		elif [ -e /usr/share/terminfo/x/xterm-256color ]; then
-			export TERM='xterm-256color'
-		else
-			export TERM='xterm-color'
-		fi
-		
-		# prompt settings
-		source ~/.bash_prompt.linux;
-	;;
+        # windows path
+        PATH=~$PY_HOME:$PATH
+        PATH=~$GROOVY_HOME/bin:$PATH
+        PATH=~$JAVA_HOME/bin:$PATH
+        PATH=~$KOTLIN_HOME/bin:$PATH
+        PATH=~$NODE_HOME/bin:$PATH
+        PATH=~$ANT_HOME/bin:$PATH
+        PATH=~$CATALINA_HOME/bin:$PATH
+        PATH=~$M2_HOME/bin:$PATH
+        export PATH
+        
+        # prompt settings
+        source ~/.bash_prompt.windows;
+        
+        # print clipboard contents
+        alias a_showclipboard='cat /dev/clipboard'
+        
+        # open windows explorer at current dir
+        alias a_open_windows_explorer_here='cmd //c explorer .'
+    ;;
+    'Linux') 
+        # linux
+        # exports
+        if [ -e /usr/share/terminfo/x/xterm+256color ]; then
+            export TERM='xterm+256color'
+        elif [ -e /usr/share/terminfo/x/xterm-256color ]; then
+            export TERM='xterm-256color'
+        else
+            export TERM='xterm-color'
+        fi
+        
+        # prompt settings
+        source ~/.bash_prompt.linux;
+    ;;
 esac
 
 # load the shell dotfiles, and then some:
 # * ~/.functions more aliases and functions
 # * ~/.extra can be used for other settings you don’t want to commit.
 for file in ~/.{functions,extra}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+    [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 unset file;

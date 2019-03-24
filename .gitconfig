@@ -1,148 +1,148 @@
 [alias]
-	# Pull in remote changes for the current repository and all its submodules
-	c=commit -am
-	amend=commit --amend -all
-	cl=clean -fd
-	co=checkout
-	s=status -s --long
-	d=diff
+    # Pull in remote changes for the current repository and all its submodules
+    c=commit -am
+    amend=commit --amend -all
+    cl=clean -fd
+    co=checkout
+    s=status -s --long
+    d=diff
 
-	# branches
-	b=for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
-	br=for-each-ref --sort=committerdate refs/remotes --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
-	# branches not pushed 
-	bu=log --branches --not --remotes --simplify-by-decoration --decorate --oneline --grep='auto commit at' --invert-grep
-	
-	# short history
-	l=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate -20 --no-merges
-	# include merges
-	lm=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate -20
-	# all
-	la=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate
-	# graph
-	lg=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --graph
-	# stats for commit
-	ls=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --all --stat
+    # branches
+    b=for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
+    br=for-each-ref --sort=committerdate refs/remotes --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
+    # branches not pushed 
+    bu=log --branches --not --remotes --simplify-by-decoration --decorate --oneline --grep='auto commit at' --invert-grep
+    
+    # short history
+    l=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate -20 --no-merges
+    # include merges
+    lm=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate -20
+    # all
+    la=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate
+    # graph
+    lg=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --graph
+    # stats for commit
+    ls=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --all --stat
 
-	# show all aliases in config
-	aliases = "!git config -l | grep alias | cut -c 7-" 
+    # show all aliases in config
+    aliases = "!git config -l | grep alias | cut -c 7-" 
 
-	# list
-	list-files-conflict=diff --name-only --diff-filter=U 
-	list-files-all=ls-files -t 
-	list-files-untracked=ls-files --others 
-	list-files-ignored=ls-files --others -i --exclude-standard 
-	list-files-in-commit-1=diff-tree --no-commit-id --name-only -r 
-	list-files-duplicate-by-sha-and-sort-by-sha="!git ls-tree -r HEAD | cut -c 13- | sort | uniq -D -w 40"
-	list-files-deleted = ""!f() {git log --diff-filter=D --summary | grep delete; }; f"
-	
-	list-remotes = "!git config -l | grep remote.*url | tail -n +2"
-		
-	list-branch-by-commit-1 = "!f() { git branch -a --contains $1; }; f"
-	list-tags-by-commit-1 = "!f() { git describe --always --contains $1; }; f"
-	
-	list-commit-for-file-1=log --full-history --follow --stat
-	list-commit-by-source-code-1 = "!f() { git log --pretty=pretty-short --decorate --date=short -S$1; }; f"
-	list-commit-by-commit-message-1 = "!f() { git log --pretty=pretty-short --decorate --date=short --grep=$1; }; f"
+    # list
+    list-files-conflict=diff --name-only --diff-filter=U 
+    list-files-all=ls-files -t 
+    list-files-untracked=ls-files --others 
+    list-files-ignored=ls-files --others -i --exclude-standard 
+    list-files-in-commit-1=diff-tree --no-commit-id --name-only -r 
+    list-files-duplicate-by-sha-and-sort-by-sha="!git ls-tree -r HEAD | cut -c 13- | sort | uniq -D -w 40"
+    list-files-deleted = ""!f() {git log --diff-filter=D --summary | grep delete; }; f"
+    
+    list-remotes = "!git config -l | grep remote.*url | tail -n +2"
+        
+    list-branch-by-commit-1 = "!f() { git branch -a --contains $1; }; f"
+    list-tags-by-commit-1 = "!f() { git describe --always --contains $1; }; f"
+    
+    list-commit-for-file-1=log --full-history --follow --stat
+    list-commit-by-source-code-1 = "!f() { git log --pretty=pretty-short --decorate --date=short -S$1; }; f"
+    list-commit-by-commit-message-1 = "!f() { git log --pretty=pretty-short --decorate --date=short --grep=$1; }; f"
 
-	# grep from root folder
-	list-source-by-source-code-1 = "!f() { A=$(pwd) && TOPLEVEL=$(git rev-parse --show-toplevel) && cd $TOPLEVEL && git grep --full-name -In $1 | xargs -I{} echo $TOPLEVEL/{} && cd $A; }; f"
+    # grep from root folder
+    list-source-by-source-code-1 = "!f() { A=$(pwd) && TOPLEVEL=$(git rev-parse --show-toplevel) && cd $TOPLEVEL && git grep --full-name -In $1 | xargs -I{} echo $TOPLEVEL/{} && cd $A; }; f"
 
-	# `git di $number` shows the diff between the state `$number` revisions ago and the current state
-	diff-number-revisions-ago-and-current-state-1 = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+    # `git di $number` shows the diff between the state `$number` revisions ago and the current state
+    diff-number-revisions-ago-and-current-state-1 = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
 
-	# `git di $number` shows the diff between the state `$number` revisions ago and the current state for specific file
-	diff-number-revisions-ago-and-current-state-1-for-file-2 = !"d() { git diff --patch-with-stat HEAD~$1 -- $2; }; git diff-index --quiet HEAD -- || clear; d"
-	
+    # `git di $number` shows the diff between the state `$number` revisions ago and the current state for specific file
+    diff-number-revisions-ago-and-current-state-1-for-file-2 = !"d() { git diff --patch-with-stat HEAD~$1 -- $2; }; git diff-index --quiet HEAD -- || clear; d"
+    
 [branch]
-	#When branching off a remote branch, automatically let the local branch track the remote branch
-	autosetupmerge = true
-	
+    #When branching off a remote branch, automatically let the local branch track the remote branch
+    autosetupmerge = true
+    
 [color]
-	ui = always
+    ui = always
 
 [color "diff"]
-	meta = yellow bold
-	commit = green bold
-	frag = magenta bold
-	old = red bold
-	new = green bold
-	whitespace = red reverse
-	
-[color "diff-highlight"]	
-	oldNormal = red bold
-	oldHighlight = "red bold 52"
-	newNormal = "green bold"
-	newHighlight = "green bold 22"
-	
+    meta = yellow bold
+    commit = green bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
+    
+[color "diff-highlight"]    
+    oldNormal = red bold
+    oldHighlight = "red bold 52"
+    newNormal = "green bold"
+    newHighlight = "green bold 22"
+    
 [color "branch"]
-	current = yellow reverse
-	local = yellow
-	remote = green
+    current = yellow reverse
+    local = yellow
+    remote = green
 
 [color "status"]
-	added = yellow
-	changed = green
-	untracked = cyan
+    added = yellow
+    changed = green
+    untracked = cyan
 
 [commit]
-	template = ~/.gitmessage
+    template = ~/.gitmessage
 
 [core]
-	editor = notepad
-	# https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
-	# currently Windows only
-	autocrlf = false
-	#eol = crlf
-	#skip prompting for merge commit
-	mergeoptions = --no-edit
+    editor = notepad
+    # https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
+    # currently Windows only
+    autocrlf = false
+    #eol = crlf
+    #skip prompting for merge commit
+    mergeoptions = --no-edit
 
 [diff]
-	compactionHeuristic = true	
-	
+    compactionHeuristic = true    
+    
 [difftool]
-	prompt = false
-	
+    prompt = false
+    
 [difftool "winmerge"]
-	name = WinMerge
-	trustExitCode = true
-	cmd = "/c/Program\\ Files\\ \\(x86\\)/WinMerge/WinMergeU.exe" -u -e $LOCAL $REMOTE
+    name = WinMerge
+    trustExitCode = true
+    cmd = "/c/Program\\ Files\\ \\(x86\\)/WinMerge/WinMergeU.exe" -u -e $LOCAL $REMOTE
 
 [help]
-	# Automatically correct and execute mistyped commands
-	autocorrect = 1
+    # Automatically correct and execute mistyped commands
+    autocorrect = 1
 
 [format]
-	pretty = format:%C(yellow)%h%Creset %C(cyan)%ad %Cred%<(10,trunc)%an %Creset%<(70,trunc)%s %Creset
+    pretty = format:%C(yellow)%h%Creset %C(cyan)%ad %Cred%<(10,trunc)%an %Creset%<(70,trunc)%s %Creset
 
 [pretty]
     pretty-short = format:%C(yellow)%h%Creset %C(cyan)%ad %Cred%<(10,trunc)%an %Creset%<(70,trunc)%s %Creset
-	
+    
 [include]
-	path = ~/.gitconfig.local	
-	
+    path = ~/.gitconfig.local    
+    
 [mergetool]
-	prompt = false
-	keepBackup = false
-	keepTemporaries = false
+    prompt = false
+    keepBackup = false
+    keepTemporaries = false
 
 [merge]
-	tool = winmerge
+    tool = winmerge
 
-	# always show a diffstat at the end of a merge
-	stat = true
+    # always show a diffstat at the end of a merge
+    stat = true
 
 [mergetool "winmerge"]
-	name = WinMerge
-	trustExitCode = true
-	cmd = "/c/Program\\ Files\\ \\(x86\\)/WinMerge/WinMergeU.exe" -u -e -dl \"Local\" -dr \"Remote\" $LOCAL $REMOTE $MERGED
+    name = WinMerge
+    trustExitCode = true
+    cmd = "/c/Program\\ Files\\ \\(x86\\)/WinMerge/WinMergeU.exe" -u -e -dl \"Local\" -dr \"Remote\" $LOCAL $REMOTE $MERGED
 
 [push]
-	default = current
+    default = current
 
 [merge "ours"]
-	driver = true
-	conflictstyle=diff3
+    driver = true
+    conflictstyle=diff3
 
 [credential]
-	helper = wincred
+    helper = wincred

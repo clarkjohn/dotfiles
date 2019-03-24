@@ -10,121 +10,121 @@ alias a_show_available_colors='$HOME/bin/colortest.sh'
 # SERVERS_TO_COPY_DOTFILES should be overwritten in .extra
 declare -a SERVERS_TO_COPY_DOTFILES=("placeholder1" "placeholder2")
 function a_copy_dotfiles_to_servers() {
-	echo $SERVERS_TO_COPY_DOTFILES
-	for server in "${SERVERS_TO_COPY_DOTFILES[@]}"; do
-		echo copying dotfiles over to "$server"
-		ssh "$server" "mkdir -p ~/bin && mkdir -p ~/.vim/syntax && mkdir -p ~/.vim/colors && mkdir -p ~/.vim/plugins"
-		scp ~/.bash_profile ~/.bash_prompt.linux ~/.bashrc ~/.functions  ~/.dircolors ~/.extra ~/.gitconfig ~/.gitconfig.local ~/.gitignore ~/.inputrc ~/.vimrc "$server":~
-		scp ~/.vim/colors/* "$server":~/.vim/colors
-		scp ~/.vim/plugins/* "$server":~/.vim/plugins
-		scp ~/.vim/syntax/slf4j.vim "$server":~/.vim/syntax
-		scp ~/bin/java-color-tail.pl ~/bin/vimcat.sh ~/bin/z.sh ~/bin/colortest.sh "$server":~/bin
-	done;
+    echo $SERVERS_TO_COPY_DOTFILES
+    for server in "${SERVERS_TO_COPY_DOTFILES[@]}"; do
+        echo copying dotfiles over to "$server"
+        ssh "$server" "mkdir -p ~/bin && mkdir -p ~/.vim/syntax && mkdir -p ~/.vim/colors && mkdir -p ~/.vim/plugins"
+        scp ~/.bash_profile ~/.bash_prompt.linux ~/.bashrc ~/.functions  ~/.dircolors ~/.extra ~/.gitconfig ~/.gitconfig.local ~/.gitignore ~/.inputrc ~/.vimrc "$server":~
+        scp ~/.vim/colors/* "$server":~/.vim/colors
+        scp ~/.vim/plugins/* "$server":~/.vim/plugins
+        scp ~/.vim/syntax/slf4j.vim "$server":~/.vim/syntax
+        scp ~/bin/java-color-tail.pl ~/bin/vimcat.sh ~/bin/z.sh ~/bin/colortest.sh "$server":~/bin
+    done;
 }
 
 # Extract archives - use: extract <file>
 # Based on http://dotfiles.org/~pseup/.bashrc
 function a_extract_archive() {
-	if [ -f "$1" ] ; then
-		local filename=$(basename "$1")
-		local foldername="${filename%%.*}"
-		local fullpath=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
-		local didfolderexist=false
-		if [ -d "$foldername" ]; then
-			didfolderexist=true
-			read -p "$foldername already exists, do you want to overwrite it? (y/n) " -n 1
-			echo
-			if [[ $REPLY =~ ^[Nn]$ ]]; then
-				return
-			fi
-		fi
-		mkdir -p "$foldername" && cd "$foldername"
-		case $1 in
-			*.tar.bz2) tar xjf "$fullpath" ;;
-			*.tar.gz) tar xzf "$fullpath" ;;
-			*.tar.xz) tar Jxvf "$fullpath" ;;
-			*.tar.Z) tar xzf "$fullpath" ;;
-			*.tar) tar xf "$fullpath" ;;
-			*.taz) tar xzf "$fullpath" ;;
-			*.tb2) tar xjf "$fullpath" ;;
-			*.tbz) tar xjf "$fullpath" ;;
-			*.tbz2) tar xjf "$fullpath" ;;
-			*.tgz) tar xzf "$fullpath" ;;
-			*.txz) tar Jxvf "$fullpath" ;;
-			*.zip) unzip "$fullpath" ;;
-			*) echo "'$1' cannot be extracted via extract()" && cd .. && ! $didfolderexist && rm -r "$foldername" ;;
-		esac
-	else
-		echo "'$1' is not a valid file"
-	fi
+    if [ -f "$1" ] ; then
+        local filename=$(basename "$1")
+        local foldername="${filename%%.*}"
+        local fullpath=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
+        local didfolderexist=false
+        if [ -d "$foldername" ]; then
+            didfolderexist=true
+            read -p "$foldername already exists, do you want to overwrite it? (y/n) " -n 1
+            echo
+            if [[ $REPLY =~ ^[Nn]$ ]]; then
+                return
+            fi
+        fi
+        mkdir -p "$foldername" && cd "$foldername"
+        case $1 in
+            *.tar.bz2) tar xjf "$fullpath" ;;
+            *.tar.gz) tar xzf "$fullpath" ;;
+            *.tar.xz) tar Jxvf "$fullpath" ;;
+            *.tar.Z) tar xzf "$fullpath" ;;
+            *.tar) tar xf "$fullpath" ;;
+            *.taz) tar xzf "$fullpath" ;;
+            *.tb2) tar xjf "$fullpath" ;;
+            *.tbz) tar xjf "$fullpath" ;;
+            *.tbz2) tar xjf "$fullpath" ;;
+            *.tgz) tar xzf "$fullpath" ;;
+            *.txz) tar Jxvf "$fullpath" ;;
+            *.zip) unzip "$fullpath" ;;
+            *) echo "'$1' cannot be extracted via extract()" && cd .. && ! $didfolderexist && rm -r "$foldername" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
 }
 
 # Determine size of a file or total size of a directory
 # https://github.com/mathiasbynens/dotfiles/blob/master/.functions
 function fs() {
-	if du -b /dev/null > /dev/null 2>&1; then
-		local arg=-sbh;
-	else
-		local arg=-sh;
-	fi
-	if [[ -n "$@" ]]; then
-		du $arg -- "$@";
-	else
-		du $arg .[^.]* ./*;
-	fi;
+    if du -b /dev/null > /dev/null 2>&1; then
+        local arg=-sbh;
+    else
+        local arg=-sh;
+    fi
+    if [[ -n "$@" ]]; then
+        du $arg -- "$@";
+    else
+        du $arg .[^.]* ./*;
+    fi;
 }
 
 # wrap git to show git exit in red
 function g(){
-	command git "$@"
-	local exitCode=$?
-	if [ $exitCode -ne 0 ]; 
-	then
-		printf "\033[0;31mERROR: git exited with code $exitCode\033[0m\n"
-		return $exitCode
-	fi
+    command git "$@"
+    local exitCode=$?
+    if [ $exitCode -ne 0 ]; 
+    then
+        printf "\033[0;31mERROR: git exited with code $exitCode\033[0m\n"
+        return $exitCode
+    fi
 }
 
 # temporary save all work in a temp commit
 function g_wip() {
-	git status -s long
-	git add .
-	git commit -a -m "WIP: $@"
-	git status -s long
+    git status -s long
+    git add .
+    git commit -a -m "WIP: $@"
+    git status -s long
 }
 
 # save current work in a backup branch then do a HARD reset to HEAD
 # based on http://stackoverflow.com/questions/1628088/how-to-reset-my-local-repository-to-be-just-like-the-remote-repository-head
 function g_reset_to_origin_remove_all_commits() {
-	timestamp=`date "+%Y-%m-%d-%H_%M_%S"`
-	branchname=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
-	last_non_merge_commit=`git log --no-merges --format=%B -n 1`
-	read -p "backup any changes including untracked files then reset branch $branchname to origin [Y(es backup and reset), N(o just reset)]? "
-	if [[ $REPLY =~ ^[Yy]$ ]]
-	then
-		echo "about to auto-commit any changes, including untracked files:"
-		git status -s long
-		git add .
-		echo ""
-		echo "autocommit files"
-		git commit -a -m "auto commit was at: $last_non_merge_commit"
-		echo "Creating backup auto-save branch: auto-save-$branchname-at-$timestamp"
-		git branch "auto-save-$branchname-at-$timestamp" 		
-		echo "resetting to origin/$branchname"
-		git fetch origin
-		git reset --hard origin/$branchname
-		echo "removing untracked files"
-		git clean -d -f
-	elif [[ $REPLY =~ ^[Nn]$ ]]
-	then
-		echo "resetting to origin/$branchname"
-		git fetch origin
-		git reset --hard origin/$branchname
-		echo "removing untracked files"
-		git clean -d -f
-	else
-		echo "cancelled"
-	fi
+    timestamp=`date "+%Y-%m-%d-%H_%M_%S"`
+    branchname=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
+    last_non_merge_commit=`git log --no-merges --format=%B -n 1`
+    read -p "backup any changes including untracked files then reset branch $branchname to origin [Y(es backup and reset), N(o just reset)]? "
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "about to auto-commit any changes, including untracked files:"
+        git status -s long
+        git add .
+        echo ""
+        echo "autocommit files"
+        git commit -a -m "auto commit was at: $last_non_merge_commit"
+        echo "Creating backup auto-save branch: auto-save-$branchname-at-$timestamp"
+        git branch "auto-save-$branchname-at-$timestamp"         
+        echo "resetting to origin/$branchname"
+        git fetch origin
+        git reset --hard origin/$branchname
+        echo "removing untracked files"
+        git clean -d -f
+    elif [[ $REPLY =~ ^[Nn]$ ]]
+    then
+        echo "resetting to origin/$branchname"
+        git fetch origin
+        git reset --hard origin/$branchname
+        echo "removing untracked files"
+        git clean -d -f
+    else
+        echo "cancelled"
+    fi
 }
 
 # delete local branches:
@@ -133,32 +133,32 @@ function g_reset_to_origin_remove_all_commits() {
 #use this
 #https://github.com/paulirish/dotfiles/blob/master/bin/git-delete-merged-branches
 function g_clean_local_branches() {
-	#http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
-	echo "deleting local branches merged to master, except for development branches"
-	git branch --merged master | egrep -v "(^\*|master|dev|dev_1|develop)" | xargs git branch -d
+    #http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
+    echo "deleting local branches merged to master, except for development branches"
+    git branch --merged master | egrep -v "(^\*|master|dev|dev_1|develop)" | xargs git branch -d
 
-	echo "deleting local auto-save branches over 7 days old"
-	previous_timestamp=`date -d "7 days ago" +"%Y-%m-%d"`
-	
+    echo "deleting local auto-save branches over 7 days old"
+    previous_timestamp=`date -d "7 days ago" +"%Y-%m-%d"`
+    
     for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/auto-save*); do
-		branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
-		
-		if [[ "$branch_date" < "$previous_timestamp" ]];
-		then
-			echo "$branch is older than 7 days, deleting"
-			git branch -D $branch
-		fi  
-	done
-	
-	for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/auto-save-*/*); do
-		branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
-		
-		if [[ "$branch_date" < "$previous_timestamp" ]];
-		then
-			echo "$branch is older than 7 days, deleting"
-			git branch -D $branch
-		fi  
-	done		
+        branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
+        
+        if [[ "$branch_date" < "$previous_timestamp" ]];
+        then
+            echo "$branch is older than 7 days, deleting"
+            git branch -D $branch
+        fi  
+    done
+    
+    for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/auto-save-*/*); do
+        branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
+        
+        if [[ "$branch_date" < "$previous_timestamp" ]];
+        then
+            echo "$branch is older than 7 days, deleting"
+            git branch -D $branch
+        fi  
+    done        
 }
 
 alias g_find_merge_conflicts_in_files="grep -Ril '<<<<<<<\|>>>>>>>'"
@@ -174,9 +174,9 @@ alias g_root='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-c
 # To print all values don't give second argument
 #curl -s -X GET http://twitter.com/users/show/$1.json | jsonValue profile_image_url
 function a_json_value() {
-	KEY=$1
-	num=$2
-	awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
+    KEY=$1
+    num=$2
+    awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
 }
 
 # java logging color tail
@@ -185,21 +185,21 @@ function a_json_value() {
 # tail -f *.log -f **/*.log | jtail
 #alias a-jtail='$HOME/bin/java-color-tail.pl'
 function a_jtail() {
-	tail -f $1 | $HOME/bin/java-color-tail.pl
+    tail -f $1 | $HOME/bin/java-color-tail.pl
 }
 
 # List all files, long format, colorized, permissions in octal
 # https://github.com/paulirish/dotfiles/blob/master/.functions
 function la(){
-	ls -l  "$@" | awk '
-	{
-		k=0;
-		for (i=0;i<=8;i++)
-		k+=((substr($1,i+2,1)~/[rwx]/) *2^(8-i));
-		if (k)
-			printf("%0o ",k);
-			printf(" %9s  %3s %2s %5s  %6s  %s %s %s\n", $3, $6, $7, $8, $5, $9,$10, $11);
-	}'
+    ls -l  "$@" | awk '
+    {
+        k=0;
+        for (i=0;i<=8;i++)
+        k+=((substr($1,i+2,1)~/[rwx]/) *2^(8-i));
+        if (k)
+            printf("%0o ",k);
+            printf(" %9s  %3s %2s %5s  %6s  %s %s %s\n", $3, $6, $7, $8, $5, $9,$10, $11);
+    }'
 }
 
 # Print each PATH entry on a separate line
@@ -209,11 +209,11 @@ alias a_paths='echo -e ${PATH//:/\\n}'
 # Usage: `json '{"foo":42}'` or `echo '{"foo":42}' | json`
 # https://github.com/mathiasbynens/dotfiles/blob/master/.functions
 function a_json() {
-	if [ -t 0 ]; then # argument
-		python -mjson.tool <<< "$*" | pygmentize -l javascript;
-	else # pipe
-		python -mjson.tool | pygmentize -l javascript;
-	fi;
+    if [ -t 0 ]; then # argument
+        python -mjson.tool <<< "$*" | pygmentize -l javascript;
+    else # pipe
+        python -mjson.tool | pygmentize -l javascript;
+    fi;
 }
 
 # Show all the names (CNs and SANs) listed in the SSL certificate
@@ -254,82 +254,82 @@ function a_getcertnames() {
 
 # https://stackoverflow.com/questions/14464770/how-to-check-heap-usage-of-a-running-jvm-from-the-command-line
 function a_get_heap_size_from_pid_1() {
-	jstat -gc ${1} | tail -n 1 | awk '{split($0,a," "); sum=a[3]+a[4]+a[6]+a[8]; print sum}'
+    jstat -gc ${1} | tail -n 1 | awk '{split($0,a," "); sum=a[3]+a[4]+a[6]+a[8]; print sum}'
 }
 # Show certificates using curl
 # https://stackoverflow.com/questions/10079707/https-connection-using-curl-from-command-line
 function a_getcertnames_from_endpoint_curl() {
-	if [ -z "${1}" ]; then
-		echo "ERROR: No domain specified.";
-		return 1;
-	fi;
+    if [ -z "${1}" ]; then
+        echo "ERROR: No domain specified.";
+        return 1;
+    fi;
 
-	curl --insecure -v "${1}" 2>&1 | awk 'BEGIN { cert=0 } /^\* Server certificate:/ { cert=1 } /^\*/ { if (cert) print }'
-	return 0;	
+    curl --insecure -v "${1}" 2>&1 | awk 'BEGIN { cert=0 } /^\* Server certificate:/ { cert=1 } /^\*/ { if (cert) print }'
+    return 0;    
 }
 # `v` with no arguments opens the current directory in Vim, otherwise opens the
 # given location
 function v() {
-	if [ $# -eq 0 ]; then
-		vim .;
-	else
-		vim "$@";
-	fi;
+    if [ $# -eq 0 ]; then
+        vim .;
+    else
+        vim "$@";
+    fi;
 }
 
 # Compare original and gzipped file size
 gz() {
-	local origsize
-	origsize=$(wc -c < "$1")
-	local gzipsize
-	gzipsize=$(gzip -c "$1" | wc -c)
-	local ratio
-	ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l)
-	printf "orig: %d bytes\\n" "$origsize"
-	printf "gzip: %d bytes (%2.2f%%)\\n" "$gzipsize" "$ratio"
+    local origsize
+    origsize=$(wc -c < "$1")
+    local gzipsize
+    gzipsize=$(gzip -c "$1" | wc -c)
+    local ratio
+    ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l)
+    printf "orig: %d bytes\\n" "$origsize"
+    printf "gzip: %d bytes (%2.2f%%)\\n" "$gzipsize" "$ratio"
 }
 
 #windows only functions
 case $(uname) in
-	*MING*|*CYGWIN*) 
-	
-	# Start an HTTP server from a directory, optionally specifying the port
-	function a_start_http_server() {
-		local port="${1:-8000}";
-		sleep 1 && start "http://localhost:${port}/" &
-		echo "starting http server at $port"
-		python -m http.server "$port" 
-	}
-	
-	function a_netsh_show_process() {
-		echo "netstat -abno"
-		netstat -abno 
-	}
-	
-	function a_netsh_show_process_grep_process_name_1() {
-		echo "netstat -abno | grep -B" 1 $1 
-		echo "  Proto  Local Address          Foreign Address        State           PID"
-		netstat -abno | grep -B 1 "$1"
-	}
-	
-	function a_netsh_show_process_grep_port_or_pid_name_1() {
-		echo "netstat -abno | grep -A" 1 $1 
-		echo "  Proto  Local Address          Foreign Address        State           PID"
-		netstat -abno | grep -B 1 "$1"
-	}
-	
-	# `a` with no arguments opens the current directory in Atom Editor, otherwise
-	# opens the given location
-	function a() {
-		if [ $# -eq 0 ]; then
-			atom .;
-		else
-			atom "$@";
-		fi;
-	}
-	
-	# open notepad++
-	test -f "/c/Program Files (x86)/Notepad++/notepad++.exe" && alias n='/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
-	test -f "/c/Program Files/Notepad++/notepad++.exe" && alias n='/c/Program\ Files/Notepad++/notepad++.exe'
-	;;
+    *MING*|*CYGWIN*) 
+    
+    # Start an HTTP server from a directory, optionally specifying the port
+    function a_start_http_server() {
+        local port="${1:-8000}";
+        sleep 1 && start "http://localhost:${port}/" &
+        echo "starting http server at $port"
+        python -m http.server "$port" 
+    }
+    
+    function a_netsh_show_process() {
+        echo "netstat -abno"
+        netstat -abno 
+    }
+    
+    function a_netsh_show_process_grep_process_name_1() {
+        echo "netstat -abno | grep -B" 1 $1 
+        echo "  Proto  Local Address          Foreign Address        State           PID"
+        netstat -abno | grep -B 1 "$1"
+    }
+    
+    function a_netsh_show_process_grep_port_or_pid_name_1() {
+        echo "netstat -abno | grep -A" 1 $1 
+        echo "  Proto  Local Address          Foreign Address        State           PID"
+        netstat -abno | grep -B 1 "$1"
+    }
+    
+    # `a` with no arguments opens the current directory in Atom Editor, otherwise
+    # opens the given location
+    function a() {
+        if [ $# -eq 0 ]; then
+            atom .;
+        else
+            atom "$@";
+        fi;
+    }
+    
+    # open notepad++
+    test -f "/c/Program Files (x86)/Notepad++/notepad++.exe" && alias n='/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
+    test -f "/c/Program Files/Notepad++/notepad++.exe" && alias n='/c/Program\ Files/Notepad++/notepad++.exe'
+    ;;
 esac
