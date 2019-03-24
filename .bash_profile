@@ -88,6 +88,7 @@ alias fs="stat -f $1"
 alias t='tmux'
 # use existing session, if it exists
 alias ta='tmux attach'
+alias t_sync_panes='tmux setw synchronize-panes'
 
 # maven
 alias mvn='/bin/sh $HOME/bin/mvn-color.sh'
