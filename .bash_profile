@@ -144,6 +144,8 @@ case $(uname) in
         
         # open windows explorer at current dir
         alias a_open_windows_explorer_here='cmd //c explorer .'
+
+        tmux
     ;;
     'Linux') 
         # linux
