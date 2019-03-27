@@ -1,34 +1,27 @@
 " Settings -------------------------------------------------------------
 
-" Preamble {{{
-
-" Make vim more useful {{{
+" Make vim more useful
 set nocompatible
-" }}}
 
-" Syntax highlighting {{{
+" syntax highlighting
 set background=dark
 syntax on
 colorscheme molotov
 set t_Co=256
-" }}}
 
-" Mapleader {{{
-let mapleader=","
-" }}}
-
-" Local directories {{{
+" local directories
 set backupdir=~/.vim/backups
 set directory=~/.vim/swaps
 if version >= 703
   set undodir=~/.vim/undo
 endif
-" }}}
 
-" options {{{
+" options 
 set autoindent " Copy indent from last line when starting new line
 set backspace=indent,eol,start
 set cursorline " Highlight current line
+set showcmd " Show me what I'm typing
+set showmode " Show current modie
 set diffopt=filler " Add vertical spaces to keep right and left aligned
 set diffopt+=iwhite " Ignore whitespace changes (focus on code changes)
 set encoding=utf-8 nobomb " BOM often causes trouble
@@ -50,7 +43,7 @@ set incsearch " Highlight dynamically as pattern is typed
 set laststatus=2 " Always show status line
 set lazyredraw " Don't redraw when we don't have to
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ " Show “invisible” characters
-set magic " Enable extended regexes
+set magic " Enable extendede/L:regexes
 if version >= 703
     set mouse=r " Enable mouse in all in all modes
     set nofoldenable    " disable folding
@@ -76,8 +69,6 @@ set sidescrolloff=3 " Start scrolling three columns before vertical border of wi
 set smartcase " Ignore 'ignorecase' if search patter contains uppercase characters
 set smarttab " At start of line, <Tab> inserts shiftwidth spaces, <Bs> deletes shiftwidth spaces
 set softtabstop=2 " Tab key results in 2 spaces
-set splitbelow " New window goes below
-set splitright " New windows goes right
 set suffixes=.bak,~,.swp,.swo,.o,.d,.info,.aux,.log,.dvi,.pdf,.bin,.bbl,.blg,.brf,.cb,.dmg,.exe,.ind,.idx,.ilg,.inx,.out,.toc,.pyc,.pyd,.dll
 set switchbuf=""
 set title " Show the filename in the window titlebar
@@ -88,6 +79,7 @@ if version >= 703
 endif
 set viminfo=%,'9999,s512,n~/.vim/viminfo " Restore buffer list, marks are remembered for 9999 files, registers up to 512Kb are remembered
 set visualbell " Use visual bell instead of audible bell (annnnnoying)
+
 set wildchar=<TAB> " Character for CLI expansion (TAB-completion)
 set wildignore+=.DS_Store
 set wildignore+=*.jpg,*.jpeg,*.gif,*.png,*.gif,*.psd,*.o,*.obj,*.min.js
@@ -95,23 +87,78 @@ set wildignore+=*/bower_components/*,*/node_modules/*
 set wildignore+=*/smarty/*,*/vendor/*,*/.git/*,*/.hg/*,*/.svn/*,*/.sass-cache/*,*/log/*,*/tmp/*,*/build/*,*/ckeditor/*,*/doc/*,*/source_maps/*,*/dist/*
 set wildmenu " Hitting TAB in command mode will show possible completions above command line
 set wildmode=list:longest " Complete only until point of ambiguity
-set winminheight=0 " Allow splits to be reduced to a single line
-"set wrapscan " Searches wrap around end of file
-" }}}
 
-" }}}
+set winminheight=0 " Allow splits to be reduced to a single line
+set splitright " Split vertical windows right to the current windows
+set splitbelow " Split horizontal windows below to the current windo
+
+" Make Vim to handle long lines
+set wrap
+set textwidth=79
+set formatoptions=qrn1
 
 " Configuration -------------------------------------------------------------
 
-" toggle keys {{{
-:nmap <F2> :edit<CR> "refresh file
-:nmap <F3> :set invnumber<CR>
-:nmap <F4> :set wrap!<CR>
+" This comes first, because we have mappings that depend on leader
+" With a map leader it's possible to do extra key combinations
+" i.e: <leader>w saves the current file
+let mapleader = ","
+let g:mapleader = ","
 
-" toggle syntax highlighting
+" paste mode: avoid auto indent, treat chars as literals
+set pastetoggle=<leader>p 
+                          
+" refresh file                           
+nnoremap <leader>r edit 
+
+" fast saving
+nmap <leader>w :w!<cr>
+
+" toggle line numbers
+nnoremap <leader>l :set invnumber<CR>
+
+" format code
+nnoremap <leader>fc gg=G
+
+" format json
+nnoremap <leader>fj :python -m json.tool<cr>
+
+" wrap lines
+nnoremap <leader>wl :set wrap!<CR>
+
+" retab
+nnoremap <leader>rt :retab!<CR>
+
+" Toggle show hidden tabs and trailing spaces
+nnoremap <leader>sh :set nolist!<CR>
+
+" toggle show syntax highlighting
 " https://stackoverflow.com/questions/9054780/how-to-toggle-vims-search-highlight-visibility-without-disabling-it
+nnoremap <leader>ss :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
+
+" ??? 
 let hlstate=0
-:nmap <F8> :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
+
+" auto paste
+" https://coderwall.com/p/if9mda/automatically-set-paste-mode-in-vim-when-pasting-in-insert-mode
+let &t_SI .= "\<Esc>[?2004h"
+let &t_EI .= "\<Esc>[?2004l"
+
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+	command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+				\ | wincmd p | diffthis
+endif
 
 " vimdiff specific commands
 if &diff
@@ -124,21 +171,21 @@ if &diff
   hi DiffText   ctermfg=233  ctermbg=yellow  guifg=#000033 guibg=#DDDDFF gui=none cterm=none
 endif
 
-" }}}
-
 " Filetypes -------------------------------------------------------------
 
-" Java Log {{{
-augroup filetype_java_sl4j
-
-  " speed up large logs
-  " https://stackoverflow.com/questions/4775605/vim-syntax-highlight-improve-performance
-  " http://vim.wikia.com/wiki/Speed_up_Syntax_Highlighting
-
-  autocmd!
-  set synmaxcol=250 " max columns to check for syntax highlighting
-  syntax sync minlines=300 maxlines=300
-  set noswapfile " Disable swap file, just viewing logs
-  au! BufRead,BufNewFile *.out,*.out.*,*.log,*.log.*,catalina.log set filetype=slf4j 
+augroup filetypedetect
+  au! BufRead,BufNewFile *.out,*.out.*,*.log,*.log.*,catalina.log set filetype=logfile 
 augroup END
-" }}}
+
+" speed up large logs
+" https://stackoverflow.com/questions/4775605/vim-syntax-highlight-improve-performance
+" http://vim.wikia.com/wiki/Speed_up_Syntax_Highlighting
+autocmd FileType logfile set synmaxcol=250
+autocmd FileType logfile syntax sync minlines=300 maxlines=300
+autocmd FileType logfile set nocursorcolumn
+autocmd FileType logfile set nocursorline
+autocmd FileType logfile set nowrap
+autocmd FileType logfile set noswapfile 
+autocmd FileType logfile set buftype=nowrite
+autocmd FileType logfile set bufhidden=unload
+autocmd FileType logfile set undolevels=-1
