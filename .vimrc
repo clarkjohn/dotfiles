@@ -121,7 +121,7 @@ nnoremap <leader>l :set invnumber<CR>
 nnoremap <leader>fc gg=G
 
 " format json
-nnoremap <leader>fj :python -m json.tool<cr>
+nnoremap <leader>fj :%!python -m json.tool<cr>
 
 " wrap lines
 nnoremap <leader>wl :set wrap!<CR>
