@@ -64,7 +64,7 @@ set scrolloff=3 " Start scrolling three lines before horizontal border of window
 set shell=/bin/sh " Use /bin/sh for executing shell commands
 set shiftwidth=2 " The # of spaces for indenting
 set shortmess=atI " Don't show the intro message when starting vim
-set showtabline=2 " Always show tab bar
+set showtabline=1 " Always show tab bar
 set sidescrolloff=3 " Start scrolling three columns before vertical border of window
 set smartcase " Ignore 'ignorecase' if search patter contains uppercase characters
 set smarttab " At start of line, <Tab> inserts shiftwidth spaces, <Bs> deletes shiftwidth spaces
@@ -122,6 +122,9 @@ nnoremap <leader>fc gg=G
 
 " format json
 nnoremap <leader>fj :%!python -m json.tool<cr>
+
+" format all whitespaces away
+nnoremap <leader>fw :%s/\s\+$//<cr>:let @/=''<CR>
 
 " wrap lines
 nnoremap <leader>wl :set wrap!<CR>
@@ -189,3 +192,17 @@ autocmd FileType logfile set noswapfile
 autocmd FileType logfile set buftype=nowrite
 autocmd FileType logfile set bufhidden=unload
 autocmd FileType logfile set undolevels=-1
+
+" === vim-airline 
+"augroup airline_config
+"  autocmd!
+  let g:airline#extensions#tabline#buffer_nr_format = '%s '
+  let g:airline#extensions#tabline#buffer_nr_show = 1
+  let g:airline#extensions#tabline#enabled = 1
+  let g:airline#extensions#tabline#fnamecollapse = 0
+  let g:airline#extensions#tabline#fnamemod = ':t'
+
+  let g:airline#extensions#tabline#left_alt_sep = '|'
+"augroup END
+
+"let g:airline_theme='molotov'
