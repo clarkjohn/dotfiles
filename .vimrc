@@ -194,15 +194,14 @@ autocmd FileType logfile set bufhidden=unload
 autocmd FileType logfile set undolevels=-1
 
 " === vim-airline 
-"augroup airline_config
-"  autocmd!
+augroup airline_config
+  autocmd!
+
   let g:airline#extensions#tabline#buffer_nr_format = '%s '
   let g:airline#extensions#tabline#buffer_nr_show = 1
   let g:airline#extensions#tabline#enabled = 1
   let g:airline#extensions#tabline#fnamecollapse = 0
   let g:airline#extensions#tabline#fnamemod = ':t'
+augroup END
 
-  let g:airline#extensions#tabline#left_alt_sep = '|'
-"augroup END
-
-"let g:airline_theme='molotov'
+let g:airline_theme='lucius'
