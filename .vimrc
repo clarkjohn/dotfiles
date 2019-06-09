@@ -16,7 +16,8 @@ if version >= 703
   set undodir=~/.vim/undo
 endif
 
-" options 
+" options
+set noswapfile
 set autoindent " Copy indent from last line when starting new line
 set backspace=indent,eol,start
 set cursorline " Highlight current line
@@ -99,6 +100,10 @@ set formatoptions=qrn1
 
 " Configuration -------------------------------------------------------------
 
+" open help vertically
+command! -nargs=* -complete=help Help vertical belowright help <args>
+autocmd FileType help wincmd L
+
 " This comes first, because we have mappings that depend on leader
 " With a map leader it's possible to do extra key combinations
 " i.e: <leader>w saves the current file
@@ -106,10 +111,25 @@ let mapleader = ","
 let g:mapleader = ","
 
 " paste mode: avoid auto indent, treat chars as literals
-set pastetoggle=<leader>p 
-                          
-" refresh file                           
-nnoremap <leader>r edit 
+set pastetoggle=<leader>p
+
+
+" Faster split resizing (+,-) {{{
+if bufwinnr(1)
+  map + <C-W>+
+  map - <C-W>-
+endif
+
+" Better split switching (Ctrl-j, Ctrl-k, Ctrl-h, Ctrl-l) {{{
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-H> <C-W>h
+map <C-L> <C-W>l
+
+
+
+" refresh file
+nnoremap <leader>r edit
 
 " fast saving
 nmap <leader>w :w!<cr>
@@ -139,7 +159,38 @@ nnoremap <leader>sh :set nolist!<CR>
 " https://stackoverflow.com/questions/9054780/how-to-toggle-vims-search-highlight-visibility-without-disabling-it
 nnoremap <leader>ss :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
 
-" ??? 
+
+ " Buffers {{{
+augroup buffer_control
+  autocmd!
+
+  " Prompt for buffer to select (,bs) {{{
+  nnoremap <leader>bs :CtrlPBuffer<CR>
+  " }}}
+
+  " Buffer navigation (,,) (gb) (gB) (,ls) {{{
+  map <Leader>, <C-^>
+  map <Leader>ls :buffers<CR>
+  map gb :bnext<CR>
+  map gB :bprev<CR>
+  " }}}
+
+  " Jump to buffer number (<N>gb) {{{
+  let c = 1
+  while c <= 99
+    execute "nnoremap " . c . "gb :" . c . "b\<CR>"
+    let c += 1
+  endwhile
+  " }}}
+
+  " Close Quickfix window (,qq) {{{
+  map <leader>qq :cclose<CR>
+  " }}}
+augroup END
+" }}}
+
+
+" ???
 let hlstate=0
 
 " auto paste
@@ -177,7 +228,7 @@ endif
 " Filetypes -------------------------------------------------------------
 
 augroup filetypedetect
-  au! BufRead,BufNewFile *.out,*.out.*,*.log,*.log.*,catalina.log set filetype=logfile 
+  au! BufRead,BufNewFile *.out,*.out.*,*.log,*.log.*,catalina.log set filetype=logfile
 augroup END
 
 " speed up large logs
@@ -188,20 +239,31 @@ autocmd FileType logfile syntax sync minlines=300 maxlines=300
 autocmd FileType logfile set nocursorcolumn
 autocmd FileType logfile set nocursorline
 autocmd FileType logfile set nowrap
-autocmd FileType logfile set noswapfile 
+autocmd FileType logfile set noswapfile
 autocmd FileType logfile set buftype=nowrite
 autocmd FileType logfile set bufhidden=unload
 autocmd FileType logfile set undolevels=-1
+autocmd FileType logfile set synmaxcol=300
+autocmd FileType logfile set re=1
+autocmd FileType logfile set ro
 
-" === vim-airline 
+" === vim-airline
 augroup airline_config
   autocmd!
-
+  let g:airline_enable_syntastic = 1
   let g:airline#extensions#tabline#buffer_nr_format = '%s '
   let g:airline#extensions#tabline#buffer_nr_show = 1
   let g:airline#extensions#tabline#enabled = 1
   let g:airline#extensions#tabline#fnamecollapse = 0
   let g:airline#extensions#tabline#fnamemod = ':t'
+  let g:airline_theme='lucius'
 augroup END
 
-let g:airline_theme='lucius'
+" === vim-syntastic
+augroup synstastic_config
+  autocmd!
+  let g:syntastic_always_populate_loc_list = 1
+  let g:syntastic_auto_loc_list = 1
+  let g:syntastic_check_on_open = 1
+  let g:syntastic_check_on_wq = 0
+augroup END
