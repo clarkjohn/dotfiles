@@ -113,17 +113,20 @@ let g:mapleader = ","
 " paste mode: avoid auto indent, treat chars as literals
 set pastetoggle=<leader>p
 
-" Faster split resizing (+,-) 
+
+" Faster split resizing (+,-) {{{
 if bufwinnr(1)
   map + <C-W>+
   map - <C-W>-
 endif
 
-" Better split switching (Ctrl-j, Ctrl-k, Ctrl-h, Ctrl-l) 
+" Better split switching (Ctrl-j, Ctrl-k, Ctrl-h, Ctrl-l) {{{
 map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-H> <C-W>h
 map <C-L> <C-W>l
+
+
 
 " refresh file
 nnoremap <leader>r edit
@@ -156,33 +159,36 @@ nnoremap <leader>sh :set nolist!<CR>
 " https://stackoverflow.com/questions/9054780/how-to-toggle-vims-search-highlight-visibility-without-disabling-it
 nnoremap <leader>ss :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
 
-" toggle and find NERDtree
-noremap <Leader>n :NERDTreeToggle<cr>
-noremap <Leader>f :NERDTreeFind<cr>
 
- " Buffers 
+ " Buffers {{{
 augroup buffer_control
   autocmd!
 
-  " Prompt for buffer to select (,bs) 
+  " Prompt for buffer to select (,bs) {{{
   nnoremap <leader>bs :CtrlPBuffer<CR>
+  " }}}
 
-  " Buffer navigation (,,) (gb) (gB) (,ls) 
+  " Buffer navigation (,,) (gb) (gB) (,ls) {{{
   map <Leader>, <C-^>
   map <Leader>ls :buffers<CR>
   map gb :bnext<CR>
   map gB :bprev<CR>
+  " }}}
 
-  " Jump to buffer number (<N>gb) 
+  " Jump to buffer number (<N>gb) {{{
   let c = 1
   while c <= 99
     execute "nnoremap " . c . "gb :" . c . "b\<CR>"
     let c += 1
   endwhile
+  " }}}
 
-  " Close Quickfix window (,qq) 
+  " Close Quickfix window (,qq) {{{
   map <leader>qq :cclose<CR>
+  " }}}
 augroup END
+" }}}
+
 
 " ???
 let hlstate=0
@@ -261,21 +267,3 @@ augroup synstastic_config
   let g:syntastic_check_on_open = 1
   let g:syntastic_check_on_wq = 0
 augroup END
-
-" === vim-nerdtree
-augroup nerdtree_config
-  autocmd!
-  let NERDTreeShowHidden=1
-  let NERDTreeIgnore=['\.vim$', '\~$', '\.git$', '.DS_Store']
-augroup END
-
-" close nerdtree and vim on close file
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-" open a NERDTree automatically when vim starts up if no files were specified
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-
-" open NERDTree automatically when vim starts up on opening a directory
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
