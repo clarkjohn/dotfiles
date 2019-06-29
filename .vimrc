@@ -153,6 +153,9 @@ nnoremap <leader>sh :set nolist!<CR>
 " https://stackoverflow.com/questions/9054780/how-to-toggle-vims-search-highlight-visibility-without-disabling-it
 nnoremap <leader>ss :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
 
+" netrw 
+noremap <leader>n :call ToggleNetrw()<CR>
+
 " Buffers
 augroup buffer_control
   autocmd!
@@ -211,6 +214,30 @@ if &diff
   hi DiffChange ctermbg=233  guibg=#ececec gui=none   cterm=none
   hi DiffText   ctermfg=233  ctermbg=yellow  guifg=#000033 guibg=#DDDDFF gui=none cterm=none
 endif
+
+" netrw settings
+let g:netrw_banner=0 " remove banner
+let g:netrw_liststyle=3 " Tree style 
+let g:netrw_browse_split=4 " open in previous window
+let g:netrw_altv=1 " vertically split window
+let g:netrw_winsize=15 " % width of page for netrw
+
+let g:NetrwIsOpen=0 
+function! ToggleNetrw()
+    if g:NetrwIsOpen
+        let i = bufnr("$")
+        while (i >= 1)
+            if (getbufvar(i, "&filetype") == "netrw")
+                silent exe "bwipeout " . i 
+            endif
+            let i-=1
+        endwhile
+        let g:NetrwIsOpen=0
+    else
+        let g:NetrwIsOpen=1
+        silent Lexplore
+    endif
+endfunction
 
 " Filetypes -------------------------------------------------------------
 
