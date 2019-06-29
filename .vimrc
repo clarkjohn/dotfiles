@@ -113,26 +113,20 @@ let g:mapleader = ","
 " paste mode: avoid auto indent, treat chars as literals
 set pastetoggle=<leader>p
 
-
-" Faster split resizing (+,-) {{{
+" Faster split resizing (+,-)
 if bufwinnr(1)
   map + <C-W>+
   map - <C-W>-
 endif
 
-" Better split switching (Ctrl-j, Ctrl-k, Ctrl-h, Ctrl-l) {{{
+" Better split switching (Ctrl-j, Ctrl-k, Ctrl-h, Ctrl-l)
 map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-H> <C-W>h
 map <C-L> <C-W>l
 
-
-
 " refresh file
 nnoremap <leader>r edit
-
-" fast saving
-nmap <leader>w :w!<cr>
 
 " toggle line numbers
 nnoremap <leader>l :set invnumber<CR>
@@ -143,52 +137,45 @@ nnoremap <leader>fc gg=G
 " format json
 nnoremap <leader>fj :%!python -m json.tool<cr>
 
-" format all whitespaces away
+" format whitespaces away
 nnoremap <leader>fw :%s/\s\+$//<cr>:let @/=''<CR>
+
+" format retab
+nnoremap <leader>ft :retab!<CR>
 
 " wrap lines
 nnoremap <leader>wl :set wrap!<CR>
 
-" retab
-nnoremap <leader>rt :retab!<CR>
-
-" Toggle show hidden tabs and trailing spaces
+" show hidden tabs and trailing spaces
 nnoremap <leader>sh :set nolist!<CR>
 
-" toggle show syntax highlighting
+" show syntax highlighting
 " https://stackoverflow.com/questions/9054780/how-to-toggle-vims-search-highlight-visibility-without-disabling-it
 nnoremap <leader>ss :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
 
-
- " Buffers {{{
+" Buffers
 augroup buffer_control
   autocmd!
 
-  " Prompt for buffer to select (,bs) {{{
+  " Prompt for buffer to select (,bs)
   nnoremap <leader>bs :CtrlPBuffer<CR>
-  " }}}
 
-  " Buffer navigation (,,) (gb) (gB) (,ls) {{{
+  " Buffer navigation (,,) (gb) (gB) (,ls)
   map <Leader>, <C-^>
   map <Leader>ls :buffers<CR>
   map gb :bnext<CR>
   map gB :bprev<CR>
-  " }}}
 
-  " Jump to buffer number (<N>gb) {{{
+  " Jump to buffer number (<N>gb)
   let c = 1
   while c <= 99
     execute "nnoremap " . c . "gb :" . c . "b\<CR>"
     let c += 1
   endwhile
-  " }}}
 
-  " Close Quickfix window (,qq) {{{
+  " Close Quickfix window (,qq)
   map <leader>qq :cclose<CR>
-  " }}}
 augroup END
-" }}}
-
 
 " ???
 let hlstate=0
