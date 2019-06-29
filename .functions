@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# color cat
-alias c='$HOME/bin/vimcat.sh'
-
 # show colors
 alias a_show_available_colors='$HOME/bin/colortest.sh'
 
@@ -10,7 +7,7 @@ alias a_show_available_colors='$HOME/bin/colortest.sh'
 # SERVERS_TO_COPY_DOTFILES should be overwritten in .extra
 declare -a SERVERS_TO_COPY_DOTFILES=("placeholder1" "placeholder2")
 function a_copy_dotfiles_to_servers() {
-    echo $SERVERS_TO_COPY_DOTFILES
+    echo "$SERVERS_TO_COPY_DOTFILES"
     for server in "${SERVERS_TO_COPY_DOTFILES[@]}"; do
         echo copying dotfiles over to "$server"
         ssh "$server" "mkdir -p ~/bin && mkdir -p ~/.vim/syntax && mkdir -p ~/.vim/colors && mkdir -p ~/.vim/plugins"
@@ -78,7 +75,7 @@ function fs() {
 function g(){
     command git "$@"
     local exitCode=$?
-    if [ $exitCode -ne 0 ]; 
+    if [ $exitCode -ne 0 ];
     then
         printf "\033[0;31mERROR: git exited with code $exitCode\033[0m\n"
         return $exitCode
@@ -109,17 +106,17 @@ function g_reset_to_origin_remove_all_commits() {
         echo "autocommit files"
         git commit -a -m "auto commit was at: $last_non_merge_commit"
         echo "Creating backup auto-save branch: auto-save-$branchname-at-$timestamp"
-        git branch "auto-save-$branchname-at-$timestamp"         
+        git branch "auto-save-$branchname-at-$timestamp"
         echo "resetting to origin/$branchname"
         git fetch origin
-        git reset --hard origin/$branchname
+        git reset --hard origin/"$branchname"
         echo "removing untracked files"
         git clean -d -f
     elif [[ $REPLY =~ ^[Nn]$ ]]
     then
-        echo "resetting to origin/$branchname"
+        echo resetting to origin/"$branchname"
         git fetch origin
-        git reset --hard origin/$branchname
+        git reset --hard origin/"$branchname"
         echo "removing untracked files"
         git clean -d -f
     else
@@ -139,26 +136,26 @@ function g_clean_local_branches() {
 
     echo "deleting local auto-save branches over 7 days old"
     previous_timestamp=`date -d "7 days ago" +"%Y-%m-%d"`
-    
+
     for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/auto-save*); do
         branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
-        
+
         if [[ "$branch_date" < "$previous_timestamp" ]];
         then
             echo "$branch is older than 7 days, deleting"
             git branch -D $branch
-        fi  
+        fi
     done
-    
+
     for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/auto-save-*/*); do
         branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
-        
+
         if [[ "$branch_date" < "$previous_timestamp" ]];
         then
             echo "$branch is older than 7 days, deleting"
             git branch -D $branch
-        fi  
-    done        
+        fi
+    done
 }
 
 alias g_find_merge_conflicts_in_files="grep -Ril '<<<<<<<\|>>>>>>>'"
@@ -168,7 +165,7 @@ alias g_root='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-c
 
 # parse json value
 # https://gist.github.com/cjus/1047794
-# To print your values give second argument 
+# To print your values give second argument
 # curl -s -X GET http://twitter.com/users/show/$1.json | jsonValue profile_image_url 1
 #
 # To print all values don't give second argument
@@ -177,15 +174,6 @@ function a_json_value() {
     KEY=$1
     num=$2
     awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
-}
-
-# java logging color tail
-# usage:
-# tail -f *.log | jtail
-# tail -f *.log -f **/*.log | jtail
-#alias a-jtail='$HOME/bin/java-color-tail.pl'
-function a_jtail() {
-    tail -f $1 | $HOME/bin/java-color-tail.pl
 }
 
 # List all files, long format, colorized, permissions in octal
@@ -265,7 +253,7 @@ function a_getcertnames_from_endpoint_curl() {
     fi;
 
     curl --insecure -v "${1}" 2>&1 | awk 'BEGIN { cert=0 } /^\* Server certificate:/ { cert=1 } /^\*/ { if (cert) print }'
-    return 0;    
+    return 0;
 }
 # `v` with no arguments opens the current directory in Vim, otherwise opens the
 # given location
@@ -291,33 +279,33 @@ gz() {
 
 #windows only functions
 case $(uname) in
-    *MING*|*CYGWIN*) 
-    
+    *MING*|*CYGWIN*)
+
     # Start an HTTP server from a directory, optionally specifying the port
     function a_start_http_server() {
         local port="${1:-8000}";
         sleep 1 && start "http://localhost:${port}/" &
         echo "starting http server at $port"
-        python -m http.server "$port" 
+        python -m http.server "$port"
     }
-    
+
     function a_netsh_show_process() {
         echo "netstat -abno"
-        netstat -abno 
+        netstat -abno
     }
-    
+
     function a_netsh_show_process_grep_process_name_1() {
-        echo "netstat -abno | grep -B" 1 $1 
+        echo "netstat -abno | grep -B" 1 "$1"
         echo "  Proto  Local Address          Foreign Address        State           PID"
         netstat -abno | grep -B 1 "$1"
     }
-    
+
     function a_netsh_show_process_grep_port_or_pid_name_1() {
-        echo "netstat -abno | grep -A" 1 $1 
+        echo "netstat -abno | grep -A" 1 "$1"
         echo "  Proto  Local Address          Foreign Address        State           PID"
         netstat -abno | grep -B 1 "$1"
     }
-    
+
     # `a` with no arguments opens the current directory in Atom Editor, otherwise
     # opens the given location
     function a() {
@@ -327,7 +315,7 @@ case $(uname) in
             atom "$@";
         fi;
     }
-    
+
     # open notepad++
     test -f "/c/Program Files (x86)/Notepad++/notepad++.exe" && alias n='/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
     test -f "/c/Program Files/Notepad++/notepad++.exe" && alias n='/c/Program\ Files/Notepad++/notepad++.exe'

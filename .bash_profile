@@ -3,7 +3,7 @@ export PATH="$HOME/bin:$PATH";
 
 # dircolors
 if [ -f "$HOME/.dircolors" ] ; then
-    eval $(dircolors -b $HOME/.dircolors)
+    eval $(dircolors -b "$HOME"/.dircolors)
 fi
 
 # check the window size after each command and, if necessary, update the values of LINES and COLUMNS.
@@ -19,7 +19,7 @@ shopt -s nocaseglob;
 # keep history up to date, across sessions, in realtime
 # http://unix.stackexchange.com/a/48113
 export HISTCONTROL=ignoredups:erasedups
-HISTFILESIZE=99999 
+HISTFILESIZE=99999
 HISTSIZE=99999
 HISTTIMEFORMAT="%a %b %Y %T "
 HISTIGNORE="ls:l:ll:ld:exit:h:history:[bf]g:j:jobs"
@@ -73,7 +73,7 @@ function f() {
 }
 
 function f_text_1_in_all_files_with_line_numbers() {
-    echo grep -Rnw ${colorflag} . -e $1 2>&1
+    echo grep -Rnw ${colorflag} . -e "$1" 2>&1
     grep -Rnw ${colorflag} . -e "$1" 2>&1
 }
 
@@ -117,13 +117,13 @@ source ~/bin/z.sh
 # https://developer.atlassian.com/blog/2016/02/best-way-to-store-dotfiles-git-bare-repo/
 function dotfiles(){
     case $(uname) in
-        *MING*|*CYGWIN*) /c/Program\ Files/Git/bin/git.exe --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
-        'Linux') /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME "$@";;
+        *MING*|*CYGWIN*) /c/Program\ Files/Git/bin/git.exe --git-dir="$HOME"/.cfg/ --work-tree="$HOME" "$@";;
+        'Linux') /usr/bin/git --git-dir="$HOME"/.cfg/ --work-tree="$HOME" "$@";;
     esac
 }
 
 case $(uname) in
-    *MING*|*CYGWIN*) 
+    *MING*|*CYGWIN*)
 
         # windows path
         PATH=~$PY_HOME:$PATH
@@ -135,19 +135,19 @@ case $(uname) in
         PATH=~$CATALINA_HOME/bin:$PATH
         PATH=~$M2_HOME/bin:$PATH
         export PATH
-        
+
         # prompt settings
         source ~/.bash_prompt.windows;
-        
+
         # print clipboard contents
         alias a_showclipboard='cat /dev/clipboard'
-        
+
         # open windows explorer at current dir
         alias a_open_windows_explorer_here='cmd //c explorer .'
 
         tmux
     ;;
-    'Linux') 
+    'Linux')
         # linux
         # exports
         if [ -e /usr/share/terminfo/x/xterm+256color ]; then
@@ -157,7 +157,7 @@ case $(uname) in
         else
             export TERM='xterm-color'
         fi
-        
+
         # prompt settings
         source ~/.bash_prompt.linux;
     ;;
