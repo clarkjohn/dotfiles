@@ -1,5 +1,3 @@
-" Settings -------------------------------------------------------------
-
 " Make vim more useful
 set nocompatible
 
@@ -104,6 +102,13 @@ set formatoptions=qrn1
 command! -nargs=* -complete=help Help vertical belowright help <args>
 autocmd FileType help wincmd L
 
+" fix alt keys in MinTTY and other terminals
+for i in range(97,122)
+  let c = nr2char(i)
+  exec "map \e".c." <M-".c.">"
+  exec "map! \e".c." <M-".c.">"
+endfor
+
 " This comes first, because we have mappings that depend on leader
 " With a map leader it's possible to do extra key combinations
 " i.e: <leader>w saves the current file
@@ -119,11 +124,27 @@ if bufwinnr(1)
   map - <C-W>-
 endif
 
-" Better split switching (Ctrl-j, Ctrl-k, Ctrl-h, Ctrl-l)
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-H> <C-W>h
-map <C-L> <C-W>l
+" esc in insert mode
+inoremap jj <esc>
+" esc in command mode
+cnoremap jj <C-C>
+
+" Yank from cursor to end of line
+nnoremap Y y$
+
+" Movement in insert mode
+inoremap <C-h> <C-o>h
+inoremap <C-l> <C-o>l
+inoremap <C-j> <C-o>j
+inoremap <C-k> <C-o>k
+
+" Moving lines up and down
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
 
 " refresh file
 nnoremap <leader>r edit
@@ -153,7 +174,7 @@ nnoremap <leader>sh :set nolist!<CR>
 " https://stackoverflow.com/questions/9054780/how-to-toggle-vims-search-highlight-visibility-without-disabling-it
 nnoremap <leader>ss :if (hlstate%2 == 0) \| syntax off \| else \| syntax on \| endif \| let hlstate=hlstate+1<cr>
 
-" netrw 
+" netrw
 noremap <leader>n :call ToggleNetrw()<CR>
 
 " Buffers
@@ -217,18 +238,18 @@ endif
 
 " netrw settings
 let g:netrw_banner=0 " remove banner
-let g:netrw_liststyle=3 " Tree style 
+let g:netrw_liststyle=3 " Tree style
 let g:netrw_browse_split=4 " open in previous window
 let g:netrw_altv=1 " vertically split window
 let g:netrw_winsize=15 " % width of page for netrw
 
-let g:NetrwIsOpen=0 
+let g:NetrwIsOpen=0
 function! ToggleNetrw()
     if g:NetrwIsOpen
         let i = bufnr("$")
         while (i >= 1)
             if (getbufvar(i, "&filetype") == "netrw")
-                silent exe "bwipeout " . i 
+                silent exe "bwipeout " . i
             endif
             let i-=1
         endwhile
