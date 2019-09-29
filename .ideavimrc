@@ -1,0 +1,46 @@
+set number
+set incsearch hlsearch
+set ignorecase smartcase
+set clipboard=unnamed
+set scrolloff=5
+set showmode
+set surround
+
+" Integrate with system clipboard
+set clipboard=unnamedplus,unnamed
+
+let mapleader = ","
+let g:mapleader = ","
+
+" esc in insert mode
+inoremap jj <esc>
+" esc in command mode
+cnoremap jj <C-C>
+
+" Yank from cursor to end of line
+nnoremap Y y$
+
+" Movement in insert mode
+inoremap <C-h> <C-o>h
+inoremap <C-l> <C-o>l
+inoremap <C-j> <C-o>j
+inoremap <C-k> <C-o>k
+
+" Moving lines up and down
+nnoremap <a-j> :m .+1<CR>==
+nnoremap <a-k> :m .-2<CR>==
+inoremap <a-j> <Esc>:m .+1<CR>==gi
+inoremap <a-k> <Esc>:m .-2<CR>==gi
+vnoremap <a-j> :m '>+1<CR>gv=gv
+vnoremap <a-k> :m '<-2<CR>gv=gv
+
+" toggle line numbers
+nnoremap <leader>l :set invnumber<CR>
+
+" format code
+nnoremap <leader>fc :action ReformatCode<cr>
+
+" format whitespaces away
+nnoremap <leader>fw :%s/\s\+$//<cr>:let @/=''<CR>
+
+
