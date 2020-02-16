@@ -129,6 +129,9 @@ inoremap jj <esc>
 " esc in command mode
 cnoremap jj <C-C>
 
+" fast saving
+nmap <leader>w :w!<cr>
+
 " Yank from cursor to end of line
 nnoremap Y y$
 
@@ -146,6 +149,12 @@ inoremap <A-k> <Esc>:m .-2<CR>==gi
 vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
 
+" Easier split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
 " refresh file
 nnoremap <leader>r edit
 
@@ -160,6 +169,9 @@ nnoremap <leader>fj :%!python -m json.tool<cr>
 
 " format whitespaces away
 nnoremap <leader>fw :%s/\s\+$//<cr>:let @/=''<CR>
+
+" reload
+nnoremap <leader>z :source ~/.vimrc<cr>
 
 " format retab
 nnoremap <leader>ft :retab!<CR>
