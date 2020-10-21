@@ -1,3 +1,9 @@
+" keymap
+" alt+up = Drop Frame 
+" alt+right = Smart Step into
+" alt+down = Step over
+" alt+left = Resume
+
 set number
 set incsearch hlsearch
 set ignorecase smartcase
@@ -16,8 +22,6 @@ let g:mapleader = ","
 inoremap jj <esc>
 " esc in command mode
 cnoremap jj <C-C>
-" fast saving
-nmap <leader>w :w!<cr>
 
 " Yank from cursor to end of line
 nnoremap Y y$
@@ -36,69 +40,62 @@ inoremap <a-k> <Esc>:m .-2<CR>==gi
 vnoremap <a-j> :m '>+1<CR>gv=gv
 vnoremap <a-k> :m '<-2<CR>gv=gv
 
-" Easier split navigations
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
-" toggle line numbers
-nnoremap <leader>l :set invnumber<CR>
-
 " format code
-nnoremap <leader>fc :action ReformatCode<cr>
+vnoremap <leader>fc :action ReformatCode<cr>
 
 " format whitespaces away
-nnoremap <leader>fw :%s/\s\+$//<cr>:let @/=''<CR>
+vnoremap <leader>fw :%s/\s\+$//<cr>:let @/=''<CR>
 
 " split
-nnoremap <leader>\| :vsplit<cr>
+vnoremap <leader>\| :vsplit<cr>
 
 " reload
-nnoremap <leader>z :source ~/.ideavimrc<cr>
+vnoremap <leader>z :source ~/.ideavimrc<cr>
+
+" disable visual mode delete
+vnoremap <BS> d
 
 " Intellij only
 
 " common
-inoremap ;; <Esc>:action EditorCompleteStatement<CR>
-nnoremap r :<C-u>action RenameElement<CR>
+vnoremap r :<C-u>action RenameElement<CR>
 
 " view
-nnoremap <Space>n :action ActivateProjectToolWindow<CR>
 vnoremap <Space>n :action ActivateProjectToolWindow<CR>
-nnoremap <Space>z :action HideAllWindows<CR>
 vnoremap <Space>z :action HideAllWindows<CR>
 
 " goto
-nnoremap gd :<C-u>action GotoDeclaration<CR>
-nnoremap gs :<C-u>action GotoSuperMethod<CR>
-nnoremap gi :<C-u>action GotoImplementation<CR>
-nnoremap gt :<C-u>action GotoTest<CR>
-nnoremap gu :<C-u>action ShowUsages<CR>
-nnoremap gf :<C-u>action GotoFile<CR>
-nnoremap gb :<C-u>action JumpToLastChange<CR>
+vnoremap gd :<C-u>action GotoDeclaration<CR>
+
+vnoremap gs :<C-u>action GotoSuperMethod<CR>
+vnoremap gi :<C-u>action GotoImplementation<CR>
+vnoremap gt :<C-u>action GotoTest<CR>
+vnoremap gu :<C-u>action ShowUsages<CR>
+vnoremap gf :<C-u>action GotoFile<CR>
 
 " run
-nnoremap <Space>rd :action Debug<cr>
-nnoremap <Space>rr :action Run<cr>
-nnoremap <Space>rs :action Stop<cr>
+vnoremap <Space>rd :action Debug<cr>
+vnoremap <Space>rr :action Run<cr>
+vnoremap <Space>rs :action Stop<cr>
 
-nnoremap <Space>h :action CallHierarchy<CR>
-nnoremap <Space>l :action LocalHistory.ShowHistory<CR>
-nnoremap <Space>i :action InspectCode<cr>
-nnoremap <Space>e :action SearchEverywhere<cr>
+vnoremap <Space>h  :action CallHierarchy<CR>
+vnoremap <Space>ll :action LocalHistory.ShowHistory<CR>
+vnoremap <Space>i  :action InspectCode<cr>
 
-nnoremap ]e :action GotoNextError<CR>
-nnoremap [e :action GotoPreviousError<CR>
+vnoremap ]e :action GotoNextError<CR>
+vnoremap [e :action GotoPreviousError<CR>
 
 " version control
-nnoremap <Space>vv :action Vcs.Show.Log<cr>
-nnoremap <Space>vc :action Compare.LastVersion<cr>
-nnoremap <Space>vl :action Vcs.Show.Local.Changes<cr>
-nnoremap <Space>vb :action ViewBreakpoints<cr>
-nnoremap ]v :action VcsShowNextChangeMarker<CR>
-nnoremap [v :action VcsShowPrevChangeMarker<CR>
+vnoremap <Space>vv :action Vcs.Show.Log<cr>
+vnoremap <Space>vc :action Compare.LastVersion<cr>
+vnoremap <Space>l  :action Vcs.Show.Local.Changes<cr>
+vnoremap ]v :action VcsShowNextChangeMarker<CR>
+vnoremap [v :action VcsShowPrevChangeMarker<CR>
+
+" debug
+vnoremap <Space>b :action ViewBreakpoints<cr>
 
 " bookmarks
-nnoremap <Space>b :action ShowBookmarks<CR>
-nnoremap ]b :action GotoNextBookmark<CR>
-nnoremap [b :action GotoPreviousBookmark<CR>
+vnoremap <Space>m :action ShowBookmarks<CR>
+vnoremap ]m :action GotoNextBookmark<CR>
+vnoremap [m :action GotoPreviousBookmark<CR>
