@@ -110,6 +110,9 @@ complete -o default -o nospace -F _git dotfiles
 # fast cd, github.com/rupa/z
 source ~/bin/z.sh
 
+# bashmarks
+source ~/bin/bashmarks.sh
+
 # bash/zsh git prompt support
 #source ~/bin/git-prompt.sh
 
