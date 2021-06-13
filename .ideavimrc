@@ -1,25 +1,25 @@
 " keymap
 
-" tmux match
-" Ctrl+A, second | = Split and Move Right
-" Ctrl+A, second - = Split and Move Down
-" Ctrl+A, second x = (other, tab) Close
-" Ctrl+A, second z = Hide All Tool Windows
-" Ctrl+A, second u = Unsplit All
-" Ctrl+A, second o = Close other Tabs
-" Ctrl+A, second right = Goto Next Splitter
-" Ctrl+A, second left  = Goto Previos Splitter
+" tmux match 
+" Alt+A, second |     = Split and Move Right
+" Alt+A, second -     = Split and Move Down
+" Alt+A, second x     = (other, tabs) Close
+" Alt+A, second z     = Hide All Tool Windows
+" Alt+A, second u     = Unsplit All
+" Alt+A, second o     = (window, editor tabs) Close other Tabs
+" Alt+A, second right = Goto Next Splitter
+" Alt+A, second left  = Goto Previos Splitter
 
 " debug
 " NumPad +   = Stop
 " NumPad-0   = Run
 " . (numpad) = Debug
-" NumPad-6   = Run to Cursor
 " NumPad-5   = Drop Frame 
 " NumPad-3   = Smart Step into
 " NumPad-2   = Step over
 " NumPad-1   = Resume Program
-" NumPad-4   = View Breakpoints
+" NumPad-7   = View Breakpoints
+" NumPad-9   = Compile and Reload File
 
 set number
 set incsearch hlsearch
