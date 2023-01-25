@@ -1,6 +1,6 @@
 " keymap
 
-" tmux match 
+" tmux match (Alt Windows, Ctrl Mac) 
 " Alt+A, second |     = Split and Move Right
 " Alt+A, second -     = Split and Move Down
 " Alt+A, second x     = (other, tabs) Close
@@ -10,44 +10,35 @@
 " Alt+A, second right = Goto Next Splitter
 " Alt+A, second left  = Goto Previos Splitter
 
-" debug
-" NumPad +   = Stop
-" NumPad-0   = Run
-" . (numpad) = Debug
-" NumPad-5   = Drop Frame 
-" NumPad-3   = Smart Step into
-" NumPad-2   = Step over
-" NumPad-1   = Resume Program
-" NumPad-7   = View Breakpoints
-" NumPad-9   = Compile and Reload File
+" debug; Alt cause isssue with Windows inserting Ascii characters
+" Ctrl+NumPad +   = Stop
+" Ctrl+NumPad-0   = Run
+" Ctrl+. (numpad) = Debug
+" Ctrl+NumPad-5   = Drop Frame 
+" Ctrl+NumPad-3   = Smart Step into
+" Ctrl+NumPad-2   = Step over
+" Ctrl+NumPad-1   = Resume Program
+" Ctrl+NumPad-7   = View Breakpoints
+" Ctrl+NumPad-9   = Compile and Reload File
 
 set number
 set incsearch hlsearch
 set ignorecase smartcase
-set clipboard=unnamed
+set clipboard+=unnamed
 set scrolloff=5
 set showmode
 set surround
-
-" Integrate with system clipboard
-set clipboard=unnamedplus,unnamed
 
 let mapleader = ","
 let g:mapleader = ","
 
 " esc in insert mode
-inoremap jj <esc>
+"inoremap jj <esc>
 " esc in command mode
-cnoremap jj <C-C>
+"cnoremap jj <C-C>
 
 " Yank from cursor to end of line
 nnoremap Y y$
-
-" Movement in insert mode
-inoremap <C-h> <C-o>h
-inoremap <C-l> <C-o>l
-inoremap <C-j> <C-o>j
-inoremap <C-k> <C-o>k
 
 " reload
 nnoremap <leader>z :source ~/.ideavimrc<cr>
