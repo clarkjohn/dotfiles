@@ -12,29 +12,6 @@ mu=38;2;255;175;215:lo=38;2;255;215;183:cr=38;2;240;160;240:\
 do=38;2;200;200;246:co=38;2;255;119;153:tm=38;2;148;148;148:\
 cm=38;2;230;150;210:bu=38;2;95;215;175:sc=38;2;110;222;222"
 
-# Enable persistent REPL history for `node`.
-export NODE_REPL_HISTORY=~/.node_history;
-# Allow 32³ entries; the default is 1000.
-export NODE_REPL_HISTORY_SIZE='32768';
-# Use sloppy mode by default, matching web browsers.
-export NODE_REPL_MODE='sloppy';
-
-# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
-export PYTHONIOENCODING='UTF-8';
-
-# history
-# keep history up to date, across sessions, in realtime
-# http://unix.stackexchange.com/a/48113
-export HISTCONTROL=ignoredups:erasedups
-HISTFILESIZE=99999
-export HISTFILESIZE="${HISTSIZE}";
-HISTTIMEFORMAT="%a %b %Y %T "
-HISTIGNORE="z:pwd:ls:l:ll:ld:lt:exit:h:history:[bf]g:j:m:jobs"
-shopt -s histappend
-
-# After each command, append to the history file and reread it
-export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
-
 # Prefer US English and use UTF-8.
 export LANG='en_US.UTF-8';
 export LC_ALL='en_US.UTF-8';
@@ -48,3 +25,11 @@ export MANPAGER='less -X';
 # Hide the “default interactive shell is now zsh” warning on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1;
 
+# fzf should be populated via `fd` which is the fastest file/dir finder. (respects gitignore, etc)
+# note.. `fd` seems faster than `ag`.. but if i wanted to use `ag` this is good: command ag --files-with-matches --filename-pattern ""
+# fd > 8.1 got slower. https://github.com/sharkdp/fd/issues/1131
+#    so.. here's the install for the last fast one: CARGO_NET_GIT_FETCH_WITH_CLI=true cargo install --vers 8.1.1 fd-find
+# To do a fzf including hidden/ignord files.. 'fd --unrestricted'
+export FZF_DEFAULT_COMMAND='fd'
+export FZF_CTRL_T_COMMAND='fd'
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always {} 2>/dev/null || tree -C {}'"
