@@ -218,7 +218,7 @@ _z() {
           if [ "$cd" ]; then
             if [ "$echo" ]; then echo "$cd"; else builtin cd "$cd"; fi
           fi
-          # show files after cf
+          # show files after z
           l
         else
           return $?
