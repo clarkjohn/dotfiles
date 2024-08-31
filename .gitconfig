@@ -89,7 +89,7 @@
     template = ~/.gitmessage
 
 [core]
-    editor = notepad
+    editor = vim
     # https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
     # currently Windows only
     autocrlf = false
