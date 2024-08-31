@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+
+# core aliases
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+alias ws="cd ~/ws"
+
+alias h=history
+
+alias l='eza --classify=auto --color --group-directories-first --sort=extension --all'
+alias ls='eza --long --classify=auto --color --group-directories-first --sort=time --all --git'
+alias ld='eza --only-dirs --sort=extension --all'
+alias lf='eza --only-files --sort=extension --all'
+alias ls_fils_size='ls --sort=size'
+alias ls_total_size_sub_folders='ls --total-size --sort=size'
+alias lg='la --git-repos --git'
+# lists in tree
+alias lt='lt_2'
+alias lt_2='eza --classify=auto --tree --level=2 --group-directories-first --sort=extension -A'
+alias lt_3='eza --classify=auto --tree --level=3 --group-directories-first --sort=extension -A'
+
+function cd() {
+    builtin cd "$@" && l
+}
+
+# fast cd, github.com/rupa/z
+source ~/bin/z.sh
+function w() {
+    z "$@"
+}
+
+# scp and ssh, skip banners
+alias ssh='ssh -q'
+alias s='ssh $@'
+alias scp='scp -q'
+
+# forcing verbose
+alias mv='mv -v'
+alias rm='rm -i -v'
+alias cp='cp -v'
+
+# file size
+alias fs="stat -f $1"
+
+# maven
+alias mvn='/bin/sh $HOME/bin/mvn-color.sh'
+alias m='mvn $@'
+alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mvn -o -Dmaven.test.skip=true -DskipTests -Dlicense.skip=true $@'
+
+# tmux
+alias t='tmux'
+# use existing session, if it exists
+alias ta='tmux attach'
+alias t_sync_panes='tmux setw synchronize-panes'
+
+# Always enable colored `grep` output
+# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+# Get macOS Software Updates, Homebrew, npm, and their installed packages
+alias a_update_all_macos_brew_npm='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup; npm install npm -g; npm update -g;'
+
+# IP addresses
+alias a_what_is_ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias a_what_is_ip_local="ipconfig getifaddr en0"
+alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+
+# Clean up LaunchServices to remove duplicates in the “Open With” menu
+alias a_cleanup_macos_launch_services_remove_duplicates="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
+
+# Recursively delete `.DS_Store` files
+alias a_cleanup_macos_ds_files_recursively="find . -type f -name '*.DS_Store' -ls -delete"
+
+# Intuitive map function
+# For example, to list all directories that contain a certain file:
+# find . -name .gitattributes | map dirname
+alias map="xargs -n1"
+
+# Kill all the tabs in Chrome to free up memory
+# [C] explained: http://www.commandlinefu.com/commands/view/402/exclude-grep-from-your-grepped-output-of-ps-alias-included-in-description
+# alias a_chrome_kill_all_tabs="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
+
+# Reload the shell (i.e. invoke as a login shell)
+alias reload="exec ${SHELL} -l"
+
+# Print each PATH entry on a separate line
+alias paths='echo -e ${PATH//:/\\n}'
+
+# find shorthand
+function f() {
+	find . -name "$1" 2>&1 | grep -v 'Permission denied' | grep -v 'not permitted'
+}
+
+# https://developer.atlassian.com/blog/2016/02/best-way-to-store-dotfiles-git-bare-repo/
+function dotfiles(){
+    /usr/bin/git --git-dir="$HOME"/.cfg/ --work-tree="$HOME" "$@"
+}
+
+# wrap git to show git exit in red
+function g(){
+    command git "$@"
+    local exitCode=$?
+    if [ $exitCode -ne 0 ];
+    then
+        printf "\033[0;31mERROR: git exited with code $exitCode\033[0m\n"
+        return $exitCode
+    fi
+}
+
+# `v` with no arguments opens the current directory in Vim, otherwise opens the
+# given location
+function v() {
+    if [ $# -eq 0 ]; then
+        vim .;
+    else
+        vim "$@";
+    fi;
+}

@@ -1,24 +1,5 @@
 #!/usr/bin/env bash
 
-# show colors
-alias a_show_available_colors='$HOME/bin/colortest.sh'
-
-# copy settings to local servers
-# SERVERS_TO_COPY_DOTFILES should be overwritten in .extra
-declare -a SERVERS_TO_COPY_DOTFILES=("placeholder1" "placeholder2")
-function a_copy_dotfiles_to_servers() {
-    echo "$SERVERS_TO_COPY_DOTFILES"
-    for server in "${SERVERS_TO_COPY_DOTFILES[@]}"; do
-        echo copying dotfiles over to "$server"
-        ssh "$server" "mkdir -p ~/bin && mkdir -p ~/.vim/syntax && mkdir -p ~/.vim/colors && mkdir -p ~/.vim/plugins"
-        scp ~/.bash_profile ~/.bash_prompt.linux ~/.bashrc ~/.functions  ~/.dircolors ~/.extra ~/.gitconfig ~/.gitconfig.local ~/.gitignore ~/.inputrc ~/.vimrc "$server":~
-        scp ~/.vim/colors/* "$server":~/.vim/colors
-        scp ~/.vim/plugins/* "$server":~/.vim/plugins
-        scp ~/.vim/syntax/slf4j.vim "$server":~/.vim/syntax
-        scp ~/bin/java-color-tail.pl ~/bin/vimcat.sh ~/bin/z.sh ~/bin/colortest.sh "$server":~/bin
-    done;
-}
-
 # Extract archives - use: extract <file>
 # Based on http://dotfiles.org/~pseup/.bashrc
 function a_extract_archive() {
@@ -53,32 +34,6 @@ function a_extract_archive() {
         esac
     else
         echo "'$1' is not a valid file"
-    fi
-}
-
-# Determine size of a file or total size of a directory
-# https://github.com/mathiasbynens/dotfiles/blob/master/.functions
-function fs() {
-    if du -b /dev/null > /dev/null 2>&1; then
-        local arg=-sbh;
-    else
-        local arg=-sh;
-    fi
-    if [[ -n "$@" ]]; then
-        du $arg -- "$@";
-    else
-        du $arg .[^.]* ./*;
-    fi;
-}
-
-# wrap git to show git exit in red
-function g(){
-    command git "$@"
-    local exitCode=$?
-    if [ $exitCode -ne 0 ];
-    then
-        printf "\033[0;31mERROR: git exited with code $exitCode\033[0m\n"
-        return $exitCode
     fi
 }
 
@@ -158,23 +113,6 @@ function g_clean_local_branches() {
     done
 }
 
-alias g_find_merge_conflicts_in_files="grep -Ril '<<<<<<<\|>>>>>>>'"
-
-# git root
-alias g_root='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-cdup || pwd`'
-
-# parse json value
-# https://gist.github.com/cjus/1047794
-# To print your values give second argument
-# curl -s -X GET http://twitter.com/users/show/$1.json | jsonValue profile_image_url 1
-#
-# To print all values don't give second argument
-#curl -s -X GET http://twitter.com/users/show/$1.json | jsonValue profile_image_url
-function a_json_value() {
-    KEY=$1
-    num=$2
-    awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
-}
 
 # List all files, long format, colorized, permissions in octal
 # https://github.com/paulirish/dotfiles/blob/master/.functions
@@ -240,10 +178,6 @@ function a_getcertnames() {
     fi
 }
 
-# https://stackoverflow.com/questions/14464770/how-to-check-heap-usage-of-a-running-jvm-from-the-command-line
-function a_get_heap_size_from_pid_1() {
-    jstat -gc ${1} | tail -n 1 | awk '{split($0,a," "); sum=a[3]+a[4]+a[6]+a[8]; print sum}'
-}
 # Show certificates using curl
 # https://stackoverflow.com/questions/10079707/https-connection-using-curl-from-command-line
 function a_getcertnames_from_endpoint_curl() {
@@ -255,69 +189,3 @@ function a_getcertnames_from_endpoint_curl() {
     curl --insecure -v "${1}" 2>&1 | awk 'BEGIN { cert=0 } /^\* Server certificate:/ { cert=1 } /^\*/ { if (cert) print }'
     return 0;
 }
-# `v` with no arguments opens the current directory in Vim, otherwise opens the
-# given location
-function v() {
-    if [ $# -eq 0 ]; then
-        vim .;
-    else
-        vim "$@";
-    fi;
-}
-
-# Compare original and gzipped file size
-gz() {
-    local origsize
-    origsize=$(wc -c < "$1")
-    local gzipsize
-    gzipsize=$(gzip -c "$1" | wc -c)
-    local ratio
-    ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l)
-    printf "orig: %d bytes\\n" "$origsize"
-    printf "gzip: %d bytes (%2.2f%%)\\n" "$gzipsize" "$ratio"
-}
-
-#windows only functions
-case $(uname) in
-    *MING*|*CYGWIN*)
-
-    # Start an HTTP server from a directory, optionally specifying the port
-    function a_start_http_server() {
-        local port="${1:-8000}";
-        sleep 1 && start "http://localhost:${port}/" &
-        echo "starting http server at $port"
-        python -m http.server "$port"
-    }
-
-    function a_netsh_show_process() {
-        echo "netstat -abno"
-        netstat -abno
-    }
-
-    function a_netsh_show_process_grep_process_name_1() {
-        echo "netstat -abno | grep -B" 1 "$1"
-        echo "  Proto  Local Address          Foreign Address        State           PID"
-        netstat -abno | grep -B 1 "$1"
-    }
-
-    function a_netsh_show_process_grep_port_or_pid_name_1() {
-        echo "netstat -abno | grep -A" 1 "$1"
-        echo "  Proto  Local Address          Foreign Address        State           PID"
-        netstat -abno | grep -B 1 "$1"
-    }
-
-    # `a` with no arguments opens the current directory in Atom Editor, otherwise
-    # opens the given location
-    function a() {
-        if [ $# -eq 0 ]; then
-            atom .;
-        else
-            atom "$@";
-        fi;
-    }
-
-    # open notepad++
-    test -f "/c/Program Files (x86)/Notepad++/notepad++.exe" && alias n='/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
-    test -f "/c/Program Files/Notepad++/notepad++.exe" && alias n='/c/Program\ Files/Notepad++/notepad++.exe'
-    ;;
-esac
