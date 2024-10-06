@@ -6,7 +6,8 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-alias ws="cd ~/ws"
+alias ws='/bin/sh $HOME/bin/ws.sh'
+alias w='ws'
 
 alias h=history
 
@@ -28,9 +29,6 @@ function cd() {
 
 # fast cd, github.com/rupa/z
 source ~/bin/z.sh
-function w() {
-    z "$@"
-}
 
 # scp and ssh, skip banners
 alias ssh='ssh -q'
@@ -52,8 +50,6 @@ alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mv
 
 # tmux
 alias t='tmux'
-# use existing session, if it exists
-alias ta='tmux attach'
 alias t_sync_panes='tmux setw synchronize-panes'
 
 # Always enable colored `grep` output
@@ -79,33 +75,24 @@ alias a_cleanup_macos_launch_services_remove_duplicates="/System/Library/Framewo
 # Recursively delete `.DS_Store` files
 alias a_cleanup_macos_ds_files_recursively="find . -type f -name '*.DS_Store' -ls -delete"
 
-# Intuitive map function
-# For example, to list all directories that contain a certain file:
-# find . -name .gitattributes | map dirname
-alias map="xargs -n1"
-
-# Kill all the tabs in Chrome to free up memory
-# [C] explained: http://www.commandlinefu.com/commands/view/402/exclude-grep-from-your-grepped-output-of-ps-alias-included-in-description
-# alias a_chrome_kill_all_tabs="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
-
 # Reload the shell (i.e. invoke as a login shell)
 alias reload="exec ${SHELL} -l"
 
 # Print each PATH entry on a separate line
-alias paths='echo -e ${PATH//:/\\n}'
+alias a_paths='echo -e ${PATH//:/\\n}'
 
 # find shorthand
 function f() {
-	find . -name "$1" 2>&1 | grep -v 'Permission denied' | grep -v 'not permitted'
+    find . -name "$1" 2>&1 | grep -v 'Permission denied' | grep -v 'not permitted'
 }
 
 # https://developer.atlassian.com/blog/2016/02/best-way-to-store-dotfiles-git-bare-repo/
-function dotfiles(){
+function dotfiles() {
     /usr/bin/git --git-dir="$HOME"/.cfg/ --work-tree="$HOME" "$@"
 }
 
 # wrap git to show git exit in red
-function g(){
+function g() {
     command git "$@"
     local exitCode=$?
     if [ $exitCode -ne 0 ];
@@ -115,12 +102,12 @@ function g(){
     fi
 }
 
-# `v` with no arguments opens the current directory in Vim, otherwise opens the
+# `v` with no arguments opens the current directory in neovim, otherwise opens the
 # given location
 function v() {
     if [ $# -eq 0 ]; then
-        vim .;
+        nvim .;
     else
-        vim "$@";
+        nvim "$@";
     fi;
 }

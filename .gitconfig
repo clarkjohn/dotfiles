@@ -89,7 +89,7 @@
     template = ~/.gitmessage
 
 [core]
-    editor = vim
+    editor = nvim
     # https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
     # currently Windows only
     autocrlf = false
@@ -99,14 +99,13 @@
 
 [diff]
     compactionHeuristic = true    
-    
-[difftool]
-    prompt = false
-    
-[difftool "winmerge"]
-    name = WinMerge
-    trustExitCode = true
-    cmd = "/c/Program\\ Files\\ \\(x86\\)/WinMerge/WinMergeU.exe" -u -e $LOCAL $REMOTE
+    tool = nvimdiff
+
+[difftool "nvim"]
+    prompt = true
+
+[difftool "nvimdiff"]
+    cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 
 [help]
     # Automatically correct and execute mistyped commands
