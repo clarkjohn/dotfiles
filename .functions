@@ -113,9 +113,6 @@ function g_clean_local_branches() {
     done
 }
 
-# Print each PATH entry on a separate line
-alias a_paths='echo -e ${PATH//:/\\n}'
-
 # Show all the names (CNs and SANs) listed in the SSL certificate
 # for a given domain
 function a_getcertnames() {
