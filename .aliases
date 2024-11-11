@@ -52,11 +52,11 @@ alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mv
 alias t='tmux'
 alias t_sync_panes='tmux setw synchronize-panes'
 
-# Always enable colored `grep` output
-# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# delta
+function rg_delta() {
+    command="rg --json -C 3 $@"
+    eval "$command" | delta
+}
 
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
@@ -80,11 +80,6 @@ alias reload="exec ${SHELL} -l"
 
 # Print each PATH entry on a separate line
 alias a_paths='echo -e ${PATH//:/\\n}'
-
-# find shorthand
-function f() {
-    find . -name "$1" 2>&1 | grep -v 'Permission denied' | grep -v 'not permitted'
-}
 
 # https://developer.atlassian.com/blog/2016/02/best-way-to-store-dotfiles-git-bare-repo/
 function dotfiles() {

@@ -1,0 +1,11 @@
+# Don't let ripgrep vomit really long lines
+--max-columns=150
+
+# Search files that begin with a .
+--hidden
+
+# ...but not inside .git directories
+--glob=!.git/*
+
+# Because who cares about case!?
+--smart-case

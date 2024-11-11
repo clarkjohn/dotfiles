@@ -96,10 +96,24 @@
     #eol = crlf
     #skip prompting for merge commit
     mergeoptions = --no-edit
+    # https://github.com/dandavison/delta
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    side-by-side = true
+    true-color = always
+    # delta detects terminal colors automatically; set one of these to disable auto-detection
+    # dark = true
+    # light = true
 
 [diff]
-    compactionHeuristic = true    
-    tool = nvimdiff
+    # for delta
+    conflictstyle = zdiff3
+    #compactionHeuristic = true    
+    #tool = nvimdiff
 
 [difftool "nvim"]
     prompt = true

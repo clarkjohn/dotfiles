@@ -2,6 +2,9 @@
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# python
+export PATH="$(brew --prefix python)/libexec/bin:$PATH"
+
 # Make vim the default editor.
 export EDITOR='vim';
 
