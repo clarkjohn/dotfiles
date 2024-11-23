@@ -17,9 +17,17 @@ fi
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob;
 
-# git Autocomplete for 'g' and 'dotfiles' as well
-complete -o default -o nospace -F _git g
-complete -o default -o nospace -F _git dotfiles
-
 # add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh s;
+
+# Enable git branch name completion. 
+# curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > ~/.git-completion.bash
+if [ -f ~/bin/.git-completion.bash ]; then
+. ~/bin/.git-completion.bash
+fi
+
+# Enable tab completion for `g` by marking it as an alias for `git`
+if type __git_complete &> /dev/null; then
+    __git_complete g __git_main
+    __git_complete dotfiles __git_main
+fi;

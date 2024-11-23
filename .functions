@@ -79,40 +79,6 @@ function g_reset_to_origin_remove_all_commits() {
     fi
 }
 
-# delete local branches:
-# 1) all merged to master
-# 2) autocommitted branch from g-reset-to-origin-remove-all-commits() that are older than 7 days
-#use this
-#https://github.com/paulirish/dotfiles/blob/master/bin/git-delete-merged-branches
-function g_clean_local_branches() {
-    #http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
-    echo "deleting local branches merged to master, except for development branches"
-    git branch --merged master | egrep -v "(^\*|master|dev|dev_1|develop)" | xargs git branch -d
-
-    echo "deleting local auto-save branches over 7 days old"
-    previous_timestamp=`date -d "7 days ago" +"%Y-%m-%d"`
-
-    for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/auto-save*); do
-        branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
-
-        if [[ "$branch_date" < "$previous_timestamp" ]];
-        then
-            echo "$branch is older than 7 days, deleting"
-            git branch -D $branch
-        fi
-    done
-
-    for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/auto-save-*/*); do
-        branch_date=$(printf "$branch" | grep -Po '(?<=-at-).[0-9]+-[0-9]+-[0-9]+')
-
-        if [[ "$branch_date" < "$previous_timestamp" ]];
-        then
-            echo "$branch is older than 7 days, deleting"
-            git branch -D $branch
-        fi
-    done
-}
-
 # Show all the names (CNs and SANs) listed in the SSL certificate
 # for a given domain
 function a_getcertnames() {
