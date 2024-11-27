@@ -22,8 +22,8 @@ shopt -s nocaseglob;
 
 # Enable git branch name completion. 
 # curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > ~/.git-completion.bash
-if [ -f ~/bin/.git-completion.bash ]; then
-. ~/bin/.git-completion.bash
+if [ -f ~/.git-completion.bash ]; then
+. ~/.git-completion.bash
 fi
 
 # Enable tab completion for `g` by marking it as an alias for `git`

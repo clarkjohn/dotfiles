@@ -30,6 +30,9 @@ export MANPAGER='less -X';
 # Hide the “default interactive shell is now zsh” warning on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1;
 
+# https://github.com/sharkdp/bat
+export BAT_THEME="1337"
+
 # fzf should be populated via `fd` which is the fastest file/dir finder. (respects gitignore, etc)
 # note.. `fd` seems faster than `ag`.. but if i wanted to use `ag` this is good: command ag --files-with-matches --filename-pattern ""
 # fd > 8.1 got slower. https://github.com/sharkdp/fd/issues/1131

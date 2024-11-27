@@ -9,10 +9,10 @@
 
     # branches
     b=for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
-    br=for-each-ref --sort=committerdate refs/remotes --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) - %(color:yellow)%(objectname:short)%(color:reset) - %(contents:subject) - %(color:red)%(authorname) %(color:reset)(%(color:green)%(committerdate:relative)%(color:reset))'
     # branches not pushed 
-    bu=log --branches --not --remotes --simplify-by-decoration --decorate --oneline --grep='auto commit at' --invert-grep
-    
+    b-not-pushed=log --branches --not --remotes --simplify-by-decoration --decorate --oneline --grep='auto commit at' --invert-grep
+
+    # log
     # short history
     l=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate -20 --no-merges
     # include merges
@@ -20,12 +20,17 @@
     # all
     la=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate
     # graph
-    lg=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --graph
+    l-graph=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --graph
     # stats for commit
-    ls=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --all --stat
+    l-stats=log --pretty=pretty-short --date=format:'%a %m-%d-%y %H:%M' --decorate --all --stat
 
     # show all aliases in config
     aliases = "!git config -l | grep alias | cut -c 7-" 
+
+    #Is it a `main` or a `master` repo? Will default to main if neither is found.
+    mainormaster = !"(git branch --format '%(refname:short)' --sort=-committerdate --list master main; echo main) | head -n1 || echo main"
+    #Show commit log of unique commits of this branch (not on main)
+    diff-commitsfrommain = !"git log --no-merges origin/$(git mainormaster).."
 
     # list
     list-files-conflict=diff --name-only --diff-filter=U 
@@ -33,31 +38,19 @@
     list-files-untracked=ls-files --others 
     list-files-ignored=ls-files --others -i --exclude-standard 
     list-files-in-commit-1=diff-tree --no-commit-id --name-only -r 
-    list-files-duplicate-by-sha-and-sort-by-sha="!git ls-tree -r HEAD | cut -c 13- | sort | uniq -D -w 40"
-    list-files-deleted = ""!f() {git log --diff-filter=D --summary | grep delete; }; f"
-    
+
     list-remotes = "!git config -l | grep remote.*url | tail -n +2"
-        
     list-branch-by-commit-1 = "!f() { git branch -a --contains $1; }; f"
     list-tags-by-commit-1 = "!f() { git describe --always --contains $1; }; f"
-    
+
     list-commit-for-file-1=log --full-history --follow --stat
     list-commit-by-source-code-1 = "!f() { git log --pretty=pretty-short --decorate --date=short -S$1; }; f"
     list-commit-by-commit-message-1 = "!f() { git log --pretty=pretty-short --decorate --date=short --grep=$1; }; f"
 
-    # grep from root folder
-    list-source-by-source-code-1 = "!f() { A=$(pwd) && TOPLEVEL=$(git rev-parse --show-toplevel) && cd $TOPLEVEL && git grep --full-name -In $1 | xargs -I{} echo $TOPLEVEL/{} && cd $A; }; f"
-
-    # `git di $number` shows the diff between the state `$number` revisions ago and the current state
-    diff-number-revisions-ago-and-current-state-1 = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
-
-    # `git di $number` shows the diff between the state `$number` revisions ago and the current state for specific file
-    diff-number-revisions-ago-and-current-state-1-for-file-2 = !"d() { git diff --patch-with-stat HEAD~$1 -- $2; }; git diff-index --quiet HEAD -- || clear; d"
-    
 [branch]
     #When branching off a remote branch, automatically let the local branch track the remote branch
     autosetupmerge = true
-    
+
 [color]
     ui = always
 
@@ -68,13 +61,13 @@
     old = red bold
     new = green bold
     whitespace = red reverse
-    
+
 [color "diff-highlight"]    
     oldNormal = red bold
     oldHighlight = "red bold 52"
     newNormal = "green bold"
     newHighlight = "green bold 22"
-    
+
 [color "branch"]
     current = yellow reverse
     local = yellow
@@ -90,36 +83,26 @@
 
 [core]
     editor = nvim
-    # https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
-    # currently Windows only
-    autocrlf = false
-    #eol = crlf
-    #skip prompting for merge commit
-    mergeoptions = --no-edit
     # https://github.com/dandavison/delta
     pager = delta
+
 [interactive]
     diffFilter = delta --color-only
 
 [delta]
     navigate = true    # use n and N to move between diff sections
-    side-by-side = true
+    #side-by-side = true
     true-color = always
-    # delta detects terminal colors automatically; set one of these to disable auto-detection
-    # dark = true
-    # light = true
+    #syntax-theme = base16
+
+    file-style = bold yellow ul
+    file-decoration-style = yellow ol ul
+    hunk-header-decoration-style = blue
+    hunk-header-line-number-style = purple bold
 
 [diff]
     # for delta
     conflictstyle = zdiff3
-    #compactionHeuristic = true    
-    #tool = nvimdiff
-
-[difftool "nvim"]
-    prompt = true
-
-[difftool "nvimdiff"]
-    cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 
 [help]
     # Automatically correct and execute mistyped commands
@@ -130,32 +113,20 @@
 
 [pretty]
     pretty-short = format:%C(yellow)%h%Creset %C(cyan)%ad %Cred%<(10,trunc)%an %Creset%<(70,trunc)%s %Creset
-    
+
 [include]
     path = ~/.gitconfig.local    
-    
-[mergetool]
-    prompt = false
-    keepBackup = false
-    keepTemporaries = false
 
 [merge]
-    tool = winmerge
-
-    # always show a diffstat at the end of a merge
+    tool = intellij
     stat = true
 
-[mergetool "winmerge"]
-    name = WinMerge
+[mergetool "intellij"]
+    cmd = '/Applications/IntelliJ IDEA.app/Contents/macOS/idea' merge $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE") $(cd $(dirname "$BASE") && pwd)/$(basename "$BASE") $(cd $(dirname "$MERGED") && pwd)/$(basename "$MERGED")
     trustExitCode = true
-    cmd = "/c/Program\\ Files\\ \\(x86\\)/WinMerge/WinMergeU.exe" -u -e -dl \"Local\" -dr \"Remote\" $LOCAL $REMOTE $MERGED
+
+[mergetool]
+    keepBackup = false
 
 [push]
     default = current
-
-[merge "ours"]
-    driver = true
-    conflictstyle=diff3
-
-[credential]
-    helper = wincred

@@ -23,6 +23,8 @@ alias lt='lt_2'
 alias lt_2='eza --classify=auto --tree --level=2 --group-directories-first --sort=extension -A'
 alias lt_3='eza --classify=auto --tree --level=3 --group-directories-first --sort=extension -A'
 
+alias c='bat'
+
 function cd() {
     builtin cd "$@" && l
 }
@@ -49,7 +51,7 @@ alias m='mvn $@'
 alias mq='echo Quick Maven - SKIPPING UNIT TESTS and enabling offline mode && mvn -o -Dmaven.test.skip=true -DskipTests -Dlicense.skip=true $@'
 
 # tmux
-alias t='tmux'
+alias t='tmux a || tmux'
 alias t_sync_panes='tmux setw synchronize-panes'
 
 # delta
@@ -85,6 +87,13 @@ alias a_paths='echo -e ${PATH//:/\\n}'
 function dotfiles() {
     /usr/bin/git --git-dir="$HOME"/.cfg/ --work-tree="$HOME" "$@"
 }
+
+# git root
+alias gr='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-cdup || pwd`'
+
+alias gitmainormaster="git branch --format '%(refname:short)' --sort=-committerdate --list master main | head -n1"
+alias main="git checkout \$(gitmainormaster)"
+alias master="main"
 
 # wrap git to show git exit in red
 function g() {
