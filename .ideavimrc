@@ -1,7 +1,14 @@
 " keymap
 
+" debug - small keyboard
+" Cmd+.     = Debug
+" Cmd+up    = Step out
+" Cmd+right = Smart Step into
+" Cmd+down  = Step over
+" Cmd+left  = Resume Program
+
 " tmux match 
-" Alt+A, second |     = Split and Move Right
+" Cmd+A, second |     = Split and Move Right
 " Alt+A, second -     = Split and Move Down
 " Alt+A, second x     = (other, tabs) Close
 " Alt+A, second z     = Hide All Tool Windows
@@ -10,52 +17,107 @@
 " Alt+A, second right = Goto Next Splitter
 " Alt+A, second left  = Goto Previos Splitter
 
-" debug
-" NumPad +   = Stop
-" NumPad-0   = Run
-" . (numpad) = Debug
-" NumPad-5   = Drop Frame 
-" NumPad-3   = Smart Step into
-" NumPad-2   = Step over
-" NumPad-1   = Resume Program
-" NumPad-7   = View Breakpoints
-" NumPad-9   = Compile and Reload File
-
-set number
-set incsearch hlsearch
-set ignorecase smartcase
-set clipboard=unnamed
-set scrolloff=5
-set showmode
-set surround
-
 " Integrate with system clipboard
 set clipboard=unnamedplus,unnamed
 
-let mapleader = ","
-let g:mapleader = ","
+" reload
+nnoremap <leader>z :source ~/.ideavimrc<cr>
 
 " esc in insert mode
 inoremap jj <esc>
 " esc in command mode
 cnoremap jj <C-C>
 
+set number
+set relativenumber
+set scrolloff=6
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+nnoremap <silent> <leader><space> :nohlsearch<CR>
+
 " Yank from cursor to end of line
 nnoremap Y y$
 
-" Movement in insert mode
-inoremap <C-h> <C-o>h
-inoremap <C-l> <C-o>l
-inoremap <C-j> <C-o>j
-inoremap <C-k> <C-o>k
+" Keep cursor centered on half-page jumps
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
 
-" reload
-nnoremap <leader>z :source ~/.ideavimrc<cr>
+" File / project (Telescope-ish)
+" <leader>ff  find file (Goto File)
+nnoremap <leader>ff :action GotoFile<CR>
+" <leader>fg  ripgrep-like 'Find in Path'
+nnoremap <leader>fg :action FindInPath<CR>
+" <leader>fp  project view focus
+nnoremap <leader>fp :action ActivateProjectToolWindow<CR>
+" <leader>fr  recent files
+nnoremap <leader>fr :action RecentFiles<CR>
+" <leader>fs  save
+nnoremap <leader>fs :w<CR>
+
+" Next / previous tab
+nnoremap gt :action SelectNextTab<CR>
+nnoremap gT :action SelectPreviousTab<CR>
+
+" Open new tab (like :tabnew)
+nnoremap <leader>tn :action NewFile<CR>
+" Close tab (like :tabclose)
+nnoremap <leader>tc :action CloseContent<CR>
+
+	
+" Splits & navigation
+" Create splits
+nnoremap <leader>sv :action SplitVertically<CR>
+nnoremap <leader>sh :action SplitHorizontally<CR>
+" Move focus between splits with Ctrl-h/j/k/l
+nnoremap <C-h> :action MoveFocusLeft<CR>
+nnoremap <C-j> :action MoveFocusDown<CR>
+nnoremap <C-k> :action MoveFocusUp<CR>
+nnoremap <C-l> :action MoveFocusRight<CR>
+" Close split
+nnoremap <leader>sc :action Unsplit<CR>
+" Equalize
+nnoremap <leader>se :action ResizeAllToDefault<CR>
+
+" LSP-ish actions
+" Go to definition, references, hover, rename, code actions
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gr :action FindUsages<CR>
+nnoremap K  :action QuickJavaDoc<CR>
+nnoremap <leader>rn :action RenameElement<CR>
+nnoremap <leader>ca :action ShowIntentionActions<CR>
+" Diagnostics next/prev
+nnoremap ]e :action GotoNextError<CR>
+nnoremap [e :action GotoPreviousError<CR>
+" Organize imports & format
+nnoremap <leader>oi :action OptimizeImports<CR>
+nnoremap <leader>fm :action ReformatCode<CR>
+
+" Editing sugar
+" Comment/uncomment (gc / gcc vibe)
+nnoremap gc :action CommentByLineComment<CR>
+vnoremap gc :action CommentByLineComment<CR>
+nnoremap gcc :action CommentByLineComment<CR>
+" Duplicate line (useful like yyp)
+nnoremap <leader>dd :action EditorDuplicate<CR>
+" Surround-like (if you install IdeaVim Extension plugin, enable its features)
+" For plain toggle case: swap case on word
+nnoremap ~ :action ToggleCase<CR>
+
+" Terminal / run
+nnoremap <leader>tt :action ActivateTerminalToolWindow<CR>
+nnoremap <leader>rr :action Run<CR>
+nnoremap <leader>rd :action Debug<CR>
+
+" Window/IDE palette
+" Search everywhere (Telescope-ish big palette)
+nnoremap <leader><leader> :action SearchEverywhere<CR>
+
+" Maximize/restore editor (like zoom in tmux)
+nnoremap <leader>z :action ToggleDistractionFreeMode<CR>
 
 " disable visual mode delete
-vnoremap <BS> d
-
-" Intellij only
-
-" common
-nnoremap r :<C-u>action RenameElement<CR>
+" vnoremap <BS> d

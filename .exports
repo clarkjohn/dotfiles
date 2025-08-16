@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# python
+export PATH="$(brew --prefix python)/libexec/bin:$PATH"
+
+# Make vim the default editor.
+export EDITOR='nvim';
+
+# EZA_COLORS (refer to: man eza_colors)
+export EZA_COLORS="da=38;5;252:sb=38;5;204:sn=38;5;43:xa=8:\
+uu=38;5;245:un=38;5;241:ur=38;5;223:uw=38;5;223:ux=38;5;223:ue=38;5;223:\
+gr=38;5;153:gw=38;5;153:gx=38;5;153:tr=38;5;175:tw=38;5;175:tx=38;5;175:\
+gm=38;5;203:ga=38;5;203:mp=3;38;5;111:im=38;2;180;150;250:vi=38;2;255;190;148:\
+mu=38;2;255;175;215:lo=38;2;255;215;183:cr=38;2;240;160;240:\
+do=38;2;200;200;246:co=38;2;255;119;153:tm=38;2;148;148;148:\
+cm=38;2;230;150;210:bu=38;2;95;215;175:sc=38;2;110;222;222"
+
+# Prefer US English and use UTF-8.
+export LANG='en_US.UTF-8';
+export LC_ALL='en_US.UTF-8';
+
+# Highlight section titles in manual pages.
+export LESS_TERMCAP_md="${yellow}";
+
+# Don’t clear the screen after quitting a manual page.
+export MANPAGER='less -X';
+
+# Hide the “default interactive shell is now zsh” warning on macOS.
+export BASH_SILENCE_DEPRECATION_WARNING=1;
+
+# https://github.com/sharkdp/bat
+export BAT_THEME="1337"
+
+# fzf should be populated via `fd` which is the fastest file/dir finder. (respects gitignore, etc)
+# note.. `fd` seems faster than `ag`.. but if i wanted to use `ag` this is good: command ag --files-with-matches --filename-pattern ""
+# fd > 8.1 got slower. https://github.com/sharkdp/fd/issues/1131
+#    so.. here's the install for the last fast one: CARGO_NET_GIT_FETCH_WITH_CLI=true cargo install --vers 8.1.1 fd-find
+# To do a fzf including hidden/ignord files.. 'fd --unrestricted'
+export FZF_DEFAULT_COMMAND='fd'
+export FZF_CTRL_T_COMMAND='fd'
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always {} 2>/dev/null || tree -C {}'"

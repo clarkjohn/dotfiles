@@ -11,8 +11,10 @@
 .bash_history
 
 # Folder view configuration files
-.DS_Store
+**/.DS_Store
 Desktop.ini
+
+CLAUDE.md
 
 # Thumbnail cache files
 ._*

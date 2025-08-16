@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+# --- Core Aliases ---
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+# Custom script aliases
+alias ws="$HOME/bin/ws.sh"
+alias w="ws"
+
+# History
+alias h="history"
+
+# eza (modern ls replacement) aliases
+# Using 'eza' for better file listing with various sorting and display options.
+# Install 'eza' if you haven't: `brew install eza` on macOS, or check your distro's package manager.
+alias l="eza --classify=auto --color=auto --group-directories-first --sort=extension --all"
+alias ls="eza --long --classify=auto --color=auto --group-directories-first --sort=modified --all --git"
+alias ld="eza --only-dirs --sort=name --all"
+alias lf="eza --only-files --sort=name --all"
+alias ls_files_size="ls --sort=size"
+alias ls_total_size_sub_folders="ls --total-size --sort=size"
+alias lg="l --git-repos --git"
+
+# Tree view aliases (requires eza)
+alias lt="lt_2"
+alias lt_2="eza --classify=auto --tree --level=2 --group-directories-first --sort=name --all"
+alias lt_3="eza --classify=auto --tree --level=3 --group-directories-first --sort=name --all"
+
+# bat (modern cat replacement)
+# Install 'bat' if you haven't: `brew install bat` on macOS, or check your distro's package manager.
+alias c="bat --paging=never --style=auto"
+
+# --- Custom Functions ---
+
+# Override cd to list directory contents after changing
+function cd() {
+    builtin cd "$@" && l
+}
+
+# Fast directory navigation (rupa/z)
+# Ensure z.sh is executable and in your PATH or sourced correctly.
+# Install 'z' if you haven't: `brew install z`
+if [ -f "$HOME/bin/z.sh" ]; then
+    source "$HOME/bin/z.sh"
+fi
+
+# SCP and SSH aliases to skip banners and use preferred options
+alias ssh="ssh -q -o StrictHostKeyChecking=no"
+alias s="ssh" # Use 's user@host' directly
+alias scp="scp -q"
+
+# Force verbose output for common commands
+alias mv="mv -v"
+alias rm="rm -i -v" # -i for interactive confirmation
+alias cp="cp -v"
+
+# File size (macOS/BSD specific stat command)
+# On Linux, you might use 'du -sh' or 'stat -c %s'
+alias fs="stat -f %z" # Gets the size in bytes
+
+# Maven aliases
+# Ensure mvn-color.sh is in your $HOME/bin and executable.
+alias mvn="$HOME/bin/mvn-color.sh"
+alias m="mvn"
+alias mq="echo 'Quick Maven - SKIPPING UNIT TESTS and enabling offline mode' && mvn -o -Dmaven.test.skip=true -DskipTests -Dlicense.skip=true"
+
+# tmux aliases
+alias t="tmux attach || tmux new-session" # Attach to existing session or create new
+alias t_sync_panes="tmux setw synchronize-panes"
+
+# ripgrep (rg) with delta for diff viewing
+# Requires 'ripgrep' and 'delta'.
+# Install 'ripgrep': `brew install ripgrep`
+# Install 'delta': `brew install git-delta`
+function rg_delta() {
+    if command -v rg &>/dev/null && command -v delta &>/dev/null; then
+        command rg --json -C 3 "$@" | delta
+    else
+        echo "Error: 'rg' or 'delta' not found. Please install them." >&2
+    fi
+}
+
+# --- System & Utility Aliases ---
+
+# Enable aliases to be sudo’ed (important for functions like 'sudo rm')
+alias sudo="sudo "
+
+# Update all macOS software, Homebrew, and npm packages
+alias update_all="sudo softwareupdate -i -a && brew update && brew upgrade && brew cleanup && npm install -g npm && npm update -g"
+
+# IP addresses
+alias what_is_ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias what_is_ip_local="ipconfig getifaddr en0" # macOS specific
+alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+
+# macOS specific cleanup aliases
+alias cleanup_macos_launch_services="lsregister -kill -r -domain local -domain system -domain user && killall Finder"
+alias cleanup_macos_ds_files="find . -type f -name '*.DS_Store' -delete -print" # -print to show deleted files
+
+# Reload the shell (i.e., invoke as a login shell)
+alias reload="exec ${SHELL} -l"
+
+# Print each PATH entry on a separate line
+alias paths='echo -e ${PATH//:/\\n}'
+
+# --- Git Aliases & Functions ---
+
+# Dotfiles management using a bare Git repository
+# Ensure you have initialized your bare repo as described in the Atlassian link.
+function dotfiles() {
+    /usr/bin/git --git-dir="$HOME"/.cfg/ --work-tree="$HOME" "$@"
+}
+
+# Go to the Git repository root
+alias gr="git rev-parse --show-toplevel &>/dev/null && cd \"\$(git rev-parse --show-toplevel)\""
+
+# Checkout main or master branch dynamically
+alias git_main_or_master="git branch --format '%(refname:short)' --sort=-committerdate --list master main | head -n1"
+alias main="git checkout \"\$(git_main_or_master)\""
+alias master="main" # Alias master to main for consistency
+
+# Wrapper for git command to show red error message on failure
+function g() {
+    command git "$@"
+    local exitCode=$?
+    if [ $exitCode -ne 0 ]; then
+        printf "\033[0;31mERROR: git exited with code %d\033[0m\n" "$exitCode" >&2
+        return "$exitCode"
+    fi
+}
+
+# 'v' with no arguments opens the current directory in neovim, otherwise opens the given location
+function v() {
+    if [ $# -eq 0 ]; then
+        nvim .;
+    else
+        nvim "$@";
+    fi;
+}
