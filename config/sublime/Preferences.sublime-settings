@@ -1,0 +1,19 @@
+// Settings in here override those in "Default/Preferences.sublime-settings",
+// and are overridden in turn by syntax-specific settings.
+{
+
+
+	// Mac only. Controls use of macOS tabs in 10.12 and newer. Each native tab
+	// contains an entire project, thus allowing multiple projects in a single
+	// window. Valid values are "system", "preferred" and "disabled".
+	"native_tabs": "preferred",
+
+	"create_window_at_startup": false,
+
+	"open_files_in_new_window": "never",
+
+	
+	"ignored_packages":
+	[
+	],
+}
